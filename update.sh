@@ -29,11 +29,11 @@ declare -A gpgKeys=(
 )
 # see https://secure.php.net/downloads.php
 
-defaultDebianSuite='stretch-slim'
+defaultDebianSuite='xenial'
 declare -A debianSuites=(
-	[5.6]='jessie'
-	[7.0]='jessie'
-	[7.1]='jessie'
+	[5.6]='xenial'
+	[7.0]='xenial'
+	[7.1]='xenial'
 )
 defaultAlpineVersion='3.6'
 declare -A alpineVersions=(

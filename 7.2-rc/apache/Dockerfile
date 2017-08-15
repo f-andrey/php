@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:stretch-slim
+FROM ubintu:xenial
 
 # persistent / runtime deps
 ENV PHPIZE_DEPS \

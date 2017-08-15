@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:jessie
+FROM ubintu:xenial
 
 # persistent / runtime deps
 ENV PHPIZE_DEPS \
