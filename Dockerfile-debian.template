@@ -1,4 +1,4 @@
-FROM ubintu:%%DEBIAN_SUITE%%
+FROM ubuntu:%%DEBIAN_SUITE%%
 
 # persistent / runtime deps
 ENV PHPIZE_DEPS \

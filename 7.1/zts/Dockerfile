@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM ubintu:xenial
+FROM ubuntu:xenial
 
 # persistent / runtime deps
 ENV PHPIZE_DEPS \
