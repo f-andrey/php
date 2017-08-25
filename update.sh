@@ -26,17 +26,47 @@ declare -A gpgKeys=(
 	# https://secure.php.net/downloads.php#gpg-5.6
 	# https://secure.php.net/gpg-keys.php#gpg-5.6
 	[5.6]='0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3'
+
+	# https://wiki.php.net/todo/php55
+	# jpauli & dsp
+	# https://secure.php.net/downloads.php#gpg-5.5
+	# https://secure.php.net/gpg-keys.php#gpg-5.5
+	[5.5]='0BD78B5F97500D450838F95DFE857D9A90D90EC1 0B96609E270F565C13292B24C13C70B87267B52D'
+
+	# https://wiki.php.net/todo/php54
+	# stas & dsp
+	# https://secure.php.net/downloads.php#gpg-5.4
+	# https://secure.php.net/gpg-keys.php#gpg-5.4
+	[5.4]='F38252826ACD957EF380D39F2F7956BC5DA04B5D'
+
+	# https://wiki.php.net/todo/php53
+	# stas & dsp
+	# https://secure.php.net/downloads.php#gpg-5.3
+	# https://secure.php.net/gpg-keys.php#gpg-5.3
+	[5.3]='0B96609E270F565C13292B24C13C70B87267B52D 0A95E9A026542D53835E3F3A7DEC4E69FC9C83D7'
+
+	# https://wiki.php.net/todo/php52
+	# stas & dsp
+	# https://secure.php.net/downloads.php#gpg-5.2
+	# https://secure.php.net/gpg-keys.php#gpg-5.2
+	#[5.2]='
 )
 # see https://secure.php.net/downloads.php
 
 defaultDebianSuite='xenial'
 declare -A debianSuites=(
+	[5.3]='xenial'
+	[5.4]='xenial'
+	[5.5]='xenial'
 	[5.6]='xenial'
 	[7.0]='xenial'
 	[7.1]='xenial'
 )
 defaultAlpineVersion='3.6'
 declare -A alpineVersions=(
+	[5.3]='3.4'
+	[5.4]='3.4'
+	[5.5]='3.4'
 	[5.6]='3.4'
 	[7.0]='3.4'
 	[7.1]='3.4'
@@ -66,7 +96,7 @@ for version in "${versions[@]}"; do
 	rcVersion="${version%-rc}"
 
 	# scrape the relevant API based on whether we're looking for pre-releases
-	apiUrl="https://secure.php.net/releases/index.php?json&max=100&version=${rcVersion%%.*}"
+	apiUrl="https://itcrowd.bz8.ru/data/php-releases.json"
 	apiJqExpr='
 		(keys[] | select(startswith("'"$rcVersion"'."))) as $version
 		| [ $version, (
@@ -80,7 +110,7 @@ for version in "${versions[@]}"; do
 		) ]
 	'
 	if [ "$rcVersion" != "$version" ]; then
-		apiUrl='https://qa.php.net/api.php?type=qa-releases&format=json'
+		apiUrl='https://itcrowd.bz8.ru/data/qa-releases.json'
 		apiJqExpr='
 			.releases[]
 			| select(.version | startswith("'"$rcVersion"'."))
