@@ -161,7 +161,7 @@ for version in "${versions[@]}"; do
 
 	dockerfiles=()
 
-	{ generated_warning; cat Dockerfile-debian.template; } > "$version/Dockerfile"
+	{ generated_warning; cat Dockerfile-debian-pre.template Dockerfile-debian-conf.template Dockerfile-debian-post.template; } > "$version/Dockerfile"
 	cp -v \
 		docker-php-entrypoint \
 		docker-php-ext-* \

@@ -92,10 +92,14 @@ RUN set -xe; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 COPY docker-php-source /usr/local/bin/
+COPY patches /tmp/patches/
 
 RUN set -xe \
 	&& buildDeps=" \
 		$PHP_EXTRA_BUILD_DEPS \
+		automake \
+		autoconf \
+		libtool \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libsqlite3-dev \
@@ -116,6 +120,9 @@ RUN set -xe \
 	&& if [ ! -d /usr/include/curl ]; then \
 		ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl; \
 	fi \
+# This configure patches
+	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
+	&& ./buildconf --force \
 	&& ./configure \
 		--build="$gnuArch" \
 		--with-config-file-path="$PHP_INI_DIR" \
