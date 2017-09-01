@@ -1,0 +1,26 @@
+Description: Fixes misuse of FD_SET()
+Origin: vendor
+Forwarded: no
+Last-Update: 2010-01-18
+
+--- a/src/ext/sockets/sockets.c
++++ b/src/ext/sockets/sockets.c
+@@ -962,6 +962,7 @@
+ 
+ 		php_sock = (php_socket*) zend_fetch_resource(element TSRMLS_CC, -1, le_socket_name, NULL, 1, le_socket);
+ 		if (!php_sock) continue; /* If element is not a resource, skip it */
++		if (php_sock->bsd_socket > FD_SETSIZE) continue; /* must ignore it */
+ 
+ 		PHP_SAFE_FD_SET(php_sock->bsd_socket, fds);
+ 		if (php_sock->bsd_socket > *max_fd) {
+--- a/src/ext/standard/streamsfuncs.c
++++ b/src/ext/standard/streamsfuncs.c
+@@ -629,6 +629,8 @@
+ 		 * is not displayed.
+ 		 * */
+ 		if (SUCCESS == php_stream_cast(stream, PHP_STREAM_AS_FD_FOR_SELECT | PHP_STREAM_CAST_INTERNAL, (void*)&tmp_fd, 1) && tmp_fd != -1) {
++			if (tmp_fd > FD_SETSIZE)
++				continue;
+ 
+ 			php_socket_t this_fd = (php_socket_t)tmp_fd;
+ 

@@ -1,0 +1,40 @@
+Description: Set the default session.save_path dir to /var/lib/php5.
+ This is the directory that has been used in Debian to store the
+ session files and is partially protected by dir permissions.
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2010-05-01
+
+--- a/src/ext/session/session.c
++++ b/src/ext/session/session.c
+@@ -732,7 +732,7 @@
+ /* {{{ PHP_INI
+  */
+ PHP_INI_BEGIN()
+-	STD_PHP_INI_ENTRY("session.save_path",          "",          PHP_INI_ALL, OnUpdateSaveDir,save_path,          php_ps_globals,    ps_globals)
++	STD_PHP_INI_ENTRY("session.save_path",          "/var/lib/php54/session",          PHP_INI_ALL, OnUpdateSaveDir,save_path,          php_ps_globals,    ps_globals)
+ 	STD_PHP_INI_ENTRY("session.name",               "PHPSESSID", PHP_INI_ALL, OnUpdateName, session_name,       php_ps_globals,    ps_globals)
+ 	PHP_INI_ENTRY("session.save_handler",           "files",     PHP_INI_ALL, OnUpdateSaveHandler)
+ 	STD_PHP_INI_BOOLEAN("session.auto_start",       "0",         PHP_INI_PERDIR, OnUpdateBool,   auto_start,         php_ps_globals,    ps_globals)
+--- a/src/php.ini-development
++++ b/src/php.ini-development
+@@ -1389,7 +1389,7 @@
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+ ; http://php.net/session.save-path
+-;session.save_path = "/tmp"
++;session.save_path = "/var/lib/php54/session"
+ 
+ ; Whether to use cookies.
+ ; http://php.net/session.use-cookies
+--- a/src/php.ini-production
++++ b/src/php.ini-production
+@@ -1383,7 +1383,7 @@
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+ ; http://php.net/session.save-path
+-;session.save_path = "/tmp"
++;session.save_path = "/var/lib/php54/session"
+ 
+ ; Whether to use cookies.
+ ; http://php.net/session.use-cookies

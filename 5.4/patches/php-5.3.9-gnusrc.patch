@@ -1,0 +1,105 @@
+--- a/src/configure.in
++++ b/src/configure.in
+@@ -136,6 +136,8 @@
+ AC_DEFUN([PHP_EXT_SRCDIR],[$abs_srcdir/ext/$1])dnl
+ AC_DEFUN([PHP_ALWAYS_SHARED],[])dnl
+ 
++AC_DEFINE([_GNU_SOURCE], 1, [Define to enable GNU C Library extensions])
++
+ dnl Setting up the PHP version based on the information above.
+ dnl -------------------------------------------------------------------------
+ 
+--- a/src/ext/interbase/interbase.c
++++ b/src/ext/interbase/interbase.c
+@@ -22,7 +22,6 @@
+ #include "config.h"
+ #endif
+ 
+-#define _GNU_SOURCE
+ 
+ #include "php.h"
+ 
+--- a/src/ext/pdo_firebird/firebird_driver.c
++++ b/src/ext/pdo_firebird/firebird_driver.c
+@@ -20,7 +20,6 @@
+ #include "config.h"
+ #endif
+ 
+-#define _GNU_SOURCE
+ 
+ #include "php.h"
+ #ifdef ZEND_ENGINE_2
+--- a/src/ext/standard/file.c
++++ b/src/ext/standard/file.c
+@@ -112,9 +112,6 @@
+ #endif
+ 
+ #if defined(HAVE_FNMATCH) && !defined(PHP_WIN32)
+-# ifndef _GNU_SOURCE
+-#  define _GNU_SOURCE
+-# endif
+ # include <fnmatch.h>
+ #endif
+ 
+--- a/src/ext/zlib/zlib_fopen_wrapper.c
++++ b/src/ext/zlib/zlib_fopen_wrapper.c
+@@ -19,8 +19,6 @@
+ 
+ /* $Id$ */
+ 
+-#define _GNU_SOURCE
+-
+ #include "php.h"
+ #include "php_zlib.h"
+ #include "fopen_wrappers.h"
+--- a/src/main/php.h
++++ b/src/main/php.h
+@@ -30,6 +30,7 @@
+ #define PHP_HAVE_STREAMS
+ #define YYDEBUG 0
+ 
++#include "php_config.h"
+ #include "php_version.h"
+ #include "zend.h"
+ #include "zend_qsort.h"
+--- a/src/main/streams/cast.c
++++ b/src/main/streams/cast.c
+@@ -18,7 +18,6 @@
+ 
+ /* $Id$ */
+ 
+-#define _GNU_SOURCE
+ #include "php.h"
+ #include "php_globals.h"
+ #include "php_network.h"
+--- a/src/main/streams/memory.c
++++ b/src/main/streams/memory.c
+@@ -18,7 +18,6 @@
+ 
+ /* $Id$ */
+ 
+-#define _GNU_SOURCE
+ #include "php.h"
+ 
+ PHPAPI int php_url_decode(char *str, int len);
+--- a/src/main/streams/streams.c
++++ b/src/main/streams/streams.c
+@@ -21,7 +21,6 @@
+ 
+ /* $Id$ */
+ 
+-#define _GNU_SOURCE
+ #include "php.h"
+ #include "php_globals.h"
+ #include "php_network.h"
+--- a/src/Zend/zend_language_parser.c
++++ b/src/Zend/zend_language_parser.c
+@@ -68,6 +68,8 @@
+ #define yydebug         zenddebug
+ #define yynerrs         zendnerrs
+ 
++#include <string.h>
++
+ /* Copy the first part of user declarations.  */
+ 
+ 

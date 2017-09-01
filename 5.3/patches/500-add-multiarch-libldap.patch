@@ -1,0 +1,11 @@
+--- php53-5.3.28/src/configure.orig	2013-12-11 00:13:12.000000000 +0400
++++ php53-5.3.28/src/configure	2014-02-22 11:42:27.000000000 +0400
+@@ -54491,7 +54491,7 @@
+ 
+ 
+ 
+-  elif test -f $LDAP_LIBDIR/libldap.$SHLIB_SUFFIX_NAME || test -f $LDAP_LIBDIR/libldap.$SHLIB_SUFFIX_NAME.3 || test -f $LDAP_LIBDIR/libldap.3.dylib; then
++  elif test -f $LDAP_LIBDIR/$DEB_HOST_MULTIARCH/libldap.$SHLIB_SUFFIX_NAME || test -f $LDAP_LIBDIR/$DEB_HOST_MULTIARCH/libldap.$SHLIB_SUFFIX_NAME.3 || test -f $LDAP_LIBDIR/$DEB_HOST_MULTIARCH/libldap.3.dylib; then
+     
+ 
+   if test "$ext_shared" = "yes"; then

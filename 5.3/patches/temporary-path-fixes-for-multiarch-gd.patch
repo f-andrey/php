@@ -1,0 +1,29 @@
+--- php53-5.3.28/src/ext/gd/config.m4.orig	2014-07-25 07:47:47.000000000 -0400
++++ php53-5.3.28/src/ext/gd/config.m4	2014-07-25 12:50:26.000000000 -0400
+@@ -162,7 +162,7 @@
+   if test "$PHP_FREETYPE_DIR" != "no"; then
+ 
+     for i in $PHP_FREETYPE_DIR /usr/local /usr; do
+-      if test -f "$i/include/freetype2/freetype/freetype.h"; then
++      if test -f "$i/include/freetype2/freetype.h"; then
+         FREETYPE2_DIR=$i
+         FREETYPE2_INC_DIR=$i/include/freetype2
+         break
+@@ -175,7 +175,7 @@
+ 
+     PHP_CHECK_LIBRARY(freetype, FT_New_Face,
+     [
+-      PHP_ADD_LIBRARY_WITH_PATH(freetype, $FREETYPE2_DIR/$PHP_LIBDIR, GD_SHARED_LIBADD)
++      PHP_ADD_LIBRARY_WITH_PATH(freetype, $FREETYPE2_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH, GD_SHARED_LIBADD)
+       PHP_ADD_INCLUDE($FREETYPE2_DIR/include)
+       PHP_ADD_INCLUDE($FREETYPE2_INC_DIR)
+       AC_DEFINE(USE_GD_IMGSTRTTF, 1, [ ])
+@@ -184,7 +184,7 @@
+     ],[
+       AC_MSG_ERROR([Problem with freetype.(a|so). Please check config.log for more information.])
+     ],[
+-      -L$FREETYPE2_DIR/$PHP_LIBDIR
++      -L$FREETYPE2_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH
+     ])
+   else
+     AC_MSG_RESULT([If configure fails try --with-freetype-dir=<DIR>])

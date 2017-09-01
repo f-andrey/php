@@ -1,0 +1,12 @@
+diff -up php-5.3.29/ext/mysqlnd/mysqlnd_result.c.php-5.4.38-mysqlnd php-5.3.29/ext/mysqlnd/mysqlnd_result.c
+--- php-5.3.29/src/ext/mysqlnd/mysqlnd_result.c.php-5.4.38-mysqlnd	2016-02-18 01:55:57.407997067 +0600
++++ php-5.3.29/src/ext/mysqlnd/mysqlnd_result.c	2016-02-18 01:56:22.133000986 +0600
+@@ -530,7 +530,7 @@ mysqlnd_query_read_result_set_header(MYS
+ 						conn->current_result = NULL;
+ 					} else {
+ 						stmt->result = NULL;
+-						memset(stmt, 0, sizeof(MYSQLND_STMT));
++						memset(stmt, 0, sizeof(*stmt));
+ 						stmt->state = MYSQLND_STMT_INITTED;
+ 					}
+ 				} else {

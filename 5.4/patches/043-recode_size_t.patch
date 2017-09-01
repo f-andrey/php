@@ -1,0 +1,19 @@
+Description: Check for possible overflows in recode_string()
+Origin: vendor
+Bug-Debian: http://bugs.debian.org/294986, http://bugs.debian.org/459020
+Forwarded: no
+Last-Update: 2010-01-18
+
+Index: php54-5.4.27/src/ext/recode/recode.c
+===================================================================
+--- php54-5.4.27.orig/src/ext/recode/recode.c	2014-04-02 09:43:49.000000000 +0400
++++ php54-5.4.27/src/ext/recode/recode.c	2014-04-04 23:56:19.000000000 +0400
+@@ -149,7 +149,7 @@
+ 	int req_len, str_len;
+ 	char *req, *str;
+ 
+-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &req, &req_len, &str, &str_len) == FAILURE) {
++	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &req, &req_len, &str, &str_len) == FAILURE || str_len < 0) {
+ 		return;
+ 	}
+ 

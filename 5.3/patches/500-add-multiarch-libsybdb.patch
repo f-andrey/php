@@ -1,0 +1,20 @@
+--- php53-5.3.28/src/configure.orig	2014-02-22 11:44:32.000000000 +0400
++++ php53-5.3.28/src/configure	2014-02-22 11:46:24.000000000 +0400
+@@ -59880,7 +59880,7 @@
+     fi
+   fi  
+ 
+-  if test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a" && test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.so"; then
++  if test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.a" && test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULYIARCH/libsybdb.so"; then
+      { echo "configure: error: Could not find $FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a|so" 1>&2; exit 1; }
+   fi
+ 
+@@ -67511,7 +67511,7 @@
+     PHP_LIBDIR=lib
+   fi
+ 
+-  if test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a" && test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.so"; then
++  if test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.a" && test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.so"; then
+      { echo "configure: error: Could not find $PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a|so" 1>&2; exit 1; }
+   fi
+ 

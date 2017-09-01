@@ -1,0 +1,14 @@
+--- php53-5.3.29/src/ext/gd/config.m4.orig	2014-09-10 19:35:06.000000000 +0400
++++ php53-5.3.29/src/ext/gd/config.m4	2014-09-10 19:45:04.000000000 +0400
+@@ -167,6 +167,11 @@
+         FREETYPE2_INC_DIR=$i/include/freetype2
+         break
+       fi
++      if test -f "$i/include/freetype2/freetype/freetype.h"; then
++        FREETYPE2_DIR=$i
++        FREETYPE2_INC_DIR=$i/include/freetype2
++        break
++      fi
+     done
+ 
+     if test -z "$FREETYPE2_DIR"; then

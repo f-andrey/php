@@ -1,0 +1,155 @@
+diff -up php-5.3.29/ext/standard/crypt_blowfish.c.update-blowfish-to-1.3 php-5.3.29/ext/standard/crypt_blowfish.c
+--- php-5.3.29/src/ext/standard/crypt_blowfish.c.update-blowfish-to-1.3	2016-02-17 20:08:47.441001430 +0600
++++ php-5.3.29/src/ext/standard/crypt_blowfish.c	2016-02-17 20:13:37.000004189 +0600
+@@ -28,12 +28,12 @@
+  * you place this code and any modifications you make under a license
+  * of your choice.
+  *
+- * This implementation is mostly compatible with OpenBSD's bcrypt.c (prefix
+- * "$2a$") by Niels Provos <provos at citi.umich.edu>, and uses some of his
+- * ideas. The password hashing algorithm was designed by David Mazieres
+- * <dm at lcs.mit.edu>. For more information on the level of compatibility,
+- * please refer to the comments in BF_set_key() below and to the crypt(3)
+- * man page included in the crypt_blowfish tarball.
++ * This implementation is fully compatible with OpenBSD's bcrypt.c for prefix
++ * "$2b$", originally by Niels Provos <provos at citi.umich.edu>, and it uses
++ * some of his ideas. The password hashing algorithm was designed by David
++ * Mazieres <dm at lcs.mit.edu>. For information on the level of
++ * compatibility for bcrypt hash prefixes other than "$2b$", please refer to
++ * the comments in BF_set_key() below and to the included crypt(3) man page.
+  *
+  * There's a paper on the algorithm that explains its design decisions:
+  *
+@@ -583,6 +583,7 @@ static void BF_set_key(const char *key, 
+  * Valid combinations of settings are:
+  *
+  * Prefix "$2a$": bug = 0, safety = 0x10000
++ * Prefix "$2b$": bug = 0, safety = 0
+  * Prefix "$2x$": bug = 1, safety = 0
+  * Prefix "$2y$": bug = 0, safety = 0
+  */
+@@ -646,6 +647,10 @@ static void BF_set_key(const char *key, 
+ 	initial[0] ^= sign;
+ }
+ 
++static const unsigned char flags_by_subtype[26] =
++	{2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 0};
++
+ static char *BF_crypt(const char *key, const char *setting,
+ 	char *output, int size,
+ 	BF_word min)
+@@ -653,9 +658,6 @@ static char *BF_crypt(const char *key, c
+ #if BF_ASM
+ 	extern void _BF_body_r(BF_ctx *ctx);
+ #endif
+-	static const unsigned char flags_by_subtype[26] =
+-		{2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 0};
+ 	struct {
+ 		BF_ctx ctx;
+ 		BF_key expanded_key;
+@@ -821,9 +823,10 @@ char *php_crypt_blowfish_rn(const char *
+ {
+ 	const char *test_key = "8b \xd0\xc1\xd2\xcf\xcc\xd8";
+ 	const char *test_setting = "$2a$00$abcdefghijklmnopqrstuu";
+-	static const char * const test_hash[2] =
+-		{"VUrPmXD6q/nVSSp7pNDhCR9071IfIRe\0\x55", /* $2x$ */
+-		"i1D709vfamulimlGcq0qq3UvuUasvEa\0\x55"}; /* $2a$, $2y$ */
++	static const char * const test_hashes[2] =
++	    {"i1D709vfamulimlGcq0qq3UvuUasvEa\0\x55", /* 'a', 'b', 'y' */
++	    "VUrPmXD6q/nVSSp7pNDhCR9071IfIRe\0\x55"}; /* 'x' */
++	const char *test_hash = test_hashes[0];
+ 	char *retval;
+ 	const char *p;
+ 	int save_errno, ok;
+@@ -845,18 +848,19 @@ char *php_crypt_blowfish_rn(const char *
+  * detected by the self-test.
+  */
+ 	memcpy(buf.s, test_setting, sizeof(buf.s));
+-	if (retval)
++	if (retval) {
++		unsigned int flags = flags_by_subtype[
++		(unsigned int)(unsigned char)setting[2] - 'a'];
++		test_hash = test_hashes[flags & 1];
+ 		buf.s[2] = setting[2];
++	}
+ 	memset(buf.o, 0x55, sizeof(buf.o));
+ 	buf.o[sizeof(buf.o) - 1] = 0;
+ 	p = BF_crypt(test_key, buf.s, buf.o, sizeof(buf.o) - (1 + 1), 1);
+ 
+ 	ok = (p == buf.o &&
+ 	    !memcmp(p, buf.s, 7 + 22) &&
+-	    !memcmp(p + (7 + 22),
+-	    test_hash[(unsigned int)(unsigned char)buf.s[2] & 1],
+-	    31 + 1 + 1 + 1));
+-
++	    !memcmp(p + (7 + 22), test_hash, 31 + 1 + 1 + 1));
+ 	{
+ 		const char *k = "\xff\xa3" "34" "\xff\xff\xff\xa3" "345";
+ 		BF_key ae, ai, ye, yi;
+@@ -885,7 +889,7 @@ char *_crypt_gensalt_blowfish_rn(const c
+ 	if (size < 16 || output_size < 7 + 22 + 1 ||
+ 	    (count && (count < 4 || count > 31)) ||
+ 	    prefix[0] != '$' || prefix[1] != '2' ||
+-	    (prefix[2] != 'a' && prefix[2] != 'y')) {
++	    (prefix[2] != 'a' && prefix[2] != 'b' && prefix[2] != 'y')) {
+ 		if (output_size > 0) output[0] = '\0';
+ 		__set_errno((output_size < 7 + 22 + 1) ? ERANGE : EINVAL);
+ 		return NULL;
+diff -up php-5.3.29/ext/standard/crypt.c.update-blowfish-to-1.3 php-5.3.29/ext/standard/crypt.c
+--- php-5.3.29/src/ext/standard/crypt.c.update-blowfish-to-1.3	2016-02-17 20:14:05.906021514 +0600
++++ php-5.3.29/src/ext/standard/crypt.c	2016-02-17 20:16:06.911999655 +0600
+@@ -204,7 +204,7 @@ PHP_FUNCTION(crypt)
+ 			salt[salt_in_len] = '\0';
+ 
+ 			crypt_res = php_sha512_crypt_r(str, salt, output, needed);
+-			if (!crypt_res) {
++			if (!crypt_res || (salt[0]=='*' && salt[1]=='0')) {
+ 				if (salt[0]=='*' && salt[1]=='0') {
+ 					RETVAL_STRING("*1", 1);
+ 				} else {
+@@ -227,7 +227,7 @@ PHP_FUNCTION(crypt)
+ 			salt[salt_in_len] = '\0';
+ 
+ 			crypt_res = php_sha256_crypt_r(str, salt, output, needed);
+-			if (!crypt_res) {
++			if (!crypt_res || (salt[0]=='*' && salt[1]=='0')) {
+ 				if (salt[0]=='*' && salt[1]=='0') {
+ 					RETVAL_STRING("*1", 1);
+ 				} else {
+@@ -242,7 +242,6 @@ PHP_FUNCTION(crypt)
+ 		} else if (
+ 				salt[0] == '$' &&
+ 				salt[1] == '2' &&
+-				salt[2] >= 'a' && salt[2] <= 'z' &&
+ 				salt[3] == '$' &&
+ 				salt[4] >= '0' && salt[4] <= '3' &&
+ 				salt[5] >= '0' && salt[5] <= '9' &&
+@@ -252,7 +251,7 @@ PHP_FUNCTION(crypt)
+ 			memset(output, 0, PHP_MAX_SALT_LEN + 1);
+ 
+ 			crypt_res = php_crypt_blowfish_rn(str, salt, output, sizeof(output));
+-			if (!crypt_res) {
++			if (!crypt_res || (salt[0]=='*' && salt[1]=='0')) {
+ 				if (salt[0]=='*' && salt[1]=='0') {
+ 					RETVAL_STRING("*1", 1);
+ 				} else {
+@@ -268,7 +267,7 @@ PHP_FUNCTION(crypt)
+ 			_crypt_extended_init_r();
+ 
+ 			crypt_res = _crypt_extended_r(str, salt, &buffer);
+-			if (!crypt_res) {
++			if (!crypt_res || (salt[0]=='*' && salt[1]=='0')) {
+ 				if (salt[0]=='*' && salt[1]=='0') {
+ 					RETURN_STRING("*1", 1);
+ 				} else {
+@@ -292,7 +291,7 @@ PHP_FUNCTION(crypt)
+ #    error Data struct used by crypt_r() is unknown. Please report.
+ #  endif
+ 		crypt_res = crypt_r(str, salt, &buffer);
+-		if (!crypt_res) {
++		if (!crypt_res || (salt[0]=='*' && salt[1]=='0')) {
+ 				if (salt[0]=='*' && salt[1]=='0') {
+ 					RETURN_STRING("*1", 1);
+ 				} else {
