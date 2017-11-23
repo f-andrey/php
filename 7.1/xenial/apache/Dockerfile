@@ -6,6 +6,9 @@
 
 FROM ubuntu:xenial
 
+# Set the env variable DEBIAN_FRONTEND to noninteractive
+ENV DEBIAN_FRONTEND noninteractive
+
 # persistent / runtime deps
 ENV PHPIZE_DEPS \
 		autoconf \
