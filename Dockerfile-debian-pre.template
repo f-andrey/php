@@ -16,7 +16,9 @@ RUN apt-get update && apt-get install -y \
 		$PHPIZE_DEPS \
 		ca-certificates \
 		curl \
+		dirmngr \
 		libcurl3 \
+		libargon2-0 \
 		libedit2 \
 		libsqlite3-0 \
 		libxml2 \
@@ -53,7 +55,7 @@ RUN set -xe; \
 	if ! command -v gpg > /dev/null; then \
 		fetchDeps="$fetchDeps \
 			dirmngr \
-			gnupg2 \
+			gnupg \
 		"; \
 	fi; \
 	apt-get update; \
@@ -93,6 +95,7 @@ RUN set -xe \
 		automake \
 		autoconf \
 		libtool \
+		libargon2-0-dev \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libsqlite3-dev \

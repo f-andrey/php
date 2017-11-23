@@ -22,7 +22,11 @@ RUN apt-get update && apt-get install -y \
 		$PHPIZE_DEPS \
 		ca-certificates \
 		curl \
+<<<<<<< HEAD:5.4/Dockerfile
 		libcurl3 \
+=======
+		libargon2-0 \
+>>>>>>> master:Dockerfile-debian.template
 		libedit2 \
 		libsqlite3-0 \
 		libxml2 \
@@ -59,7 +63,7 @@ RUN set -xe; \
 	if ! command -v gpg > /dev/null; then \
 		fetchDeps="$fetchDeps \
 			dirmngr \
-			gnupg2 \
+			gnupg \
 		"; \
 	fi; \
 	apt-get update; \
@@ -96,9 +100,13 @@ COPY patches /tmp/patches/
 RUN set -xe \
 	&& buildDeps=" \
 		$PHP_EXTRA_BUILD_DEPS \
+<<<<<<< HEAD:5.4/Dockerfile
 		automake \
 		autoconf \
 		libtool \
+=======
+		libargon2-0-dev \
+>>>>>>> master:Dockerfile-debian.template
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libsqlite3-dev \
@@ -135,6 +143,8 @@ RUN set -xe \
 		--enable-mbstring \
 # --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
 		--enable-mysqlnd \
+# https://wiki.php.net/rfc/argon2_password_hash (7.2+)
+		--with-password-argon2 \
 		\
 		--with-curl \
 		--with-libedit \
