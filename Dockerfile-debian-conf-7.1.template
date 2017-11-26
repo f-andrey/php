@@ -1,0 +1,3 @@
+# This configure patches
+	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
+	&& ./buildconf --force \

@@ -159,7 +159,7 @@ for version in "${versions[@]}"; do
 
 		for variant in cli apache fpm zts; do
 			[ -d "$version/$suite/$variant" ] || continue
-			{ generated_warning; cat "$baseDockerfile-pre.template" "$baseDockerfile-conf.template" "$baseDockerfile-post.template"; } > "$version/$suite/$variant/Dockerfile"
+			{ generated_warning; cat "$baseDockerfile-pre.template" "$baseDockerfile-conf-$version.template" "$baseDockerfile-post.template"; } > "$version/$suite/$variant/Dockerfile"
 			if [ -f "$variant-Dockerfile-block-1" ]; then
 				echo "Generating $version/$suite/$variant/Dockerfile from $baseDockerfile + $variant-Dockerfile-block-*"
 				gawk -i inplace '

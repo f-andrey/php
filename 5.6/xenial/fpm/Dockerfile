@@ -125,7 +125,7 @@ RUN set -xe \
 	&& if [ ! -d /usr/include/curl ]; then \
 		ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl; \
 	fi \
-# This configure patches
+# This configure patches for 5.6
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
 	&& ./configure \
