@@ -127,6 +127,7 @@ RUN set -xe \
 # This configure patches
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
+	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& ./configure \
 		--build="$gnuArch" \
 		--with-config-file-path="$PHP_INI_DIR" \
