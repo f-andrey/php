@@ -17,6 +17,7 @@
 		--with-curl \
 		--with-libedit \
 		--with-openssl \
+		--with-system-tzdata \
 		--with-zlib \
 		\
 # bundled pcre is too old for s390x (which isn't exactly a good sign)
