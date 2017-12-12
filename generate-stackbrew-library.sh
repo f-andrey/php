@@ -16,8 +16,8 @@ declare -A alpineVersion=(
 
 declare -A aliases=(
 	[5.6]='5'
-	[7.1]='7 latest'
-	[7.2-rc]='rc'
+	[7.2]='7 latest'
+	[7.3-rc]='rc'
 )
 
 self="$(basename "$BASH_SOURCE")"
@@ -130,6 +130,8 @@ for version in "${versions[@]}"; do
 			variantArches="${parentRepoToArches[$variantParent]}"
 
 			# 7.2 no longer supports s390x
+			# #error "Not yet implemented"
+			# https://github.com/docker-library/php/pull/487#issue-254755661
 			if [[ "$version" = 7.* ]] && [ "$version" != '7.0' ] && [ "$version" != '7.1' ]; then
 				variantArches="$(echo " $variantArches " | sed -r -e 's/ s390x//g')"
 			fi
