@@ -180,7 +180,7 @@ for version in "${versions[@]}"; do
 			if [ "$alpineVer" = '3.4' ]; then
 				sed -ri 's!libressl!openssl!g' "$version/$suite/$variant/Dockerfile"
 			fi
-			if [ "$majorVersion" = '5' ] || [ "$majorVersion" = '7' -a "$minorVersion" -lt '2' ] || [ "$suite" = 'zesty' ]; then
+			if [ "$majorVersion" = '5' ] || [ "$majorVersion" = '7' -a "$minorVersion" -lt '2' ] || [ "$suite" = 'xenial' ]; then
 				# argon2 password hashing is only supported in 7.2+ and stretch+
 				sed -ri '/argon2/d' "$version/$suite/$variant/Dockerfile"
 				# Alpine 3.7+ _should_ include an "argon2-dev" package, but we should cross that bridge when we come to it
