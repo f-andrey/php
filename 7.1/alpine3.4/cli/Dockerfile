@@ -53,9 +53,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E
 
-ENV PHP_VERSION 7.1.11
-ENV PHP_URL="https://secure.php.net/get/php-7.1.11.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.1.11.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="074093e9d7d21afedc5106904218a80a47b854abe368d2728ed22184c884893e" PHP_MD5=""
+ENV PHP_VERSION 7.1.12
+ENV PHP_URL="https://secure.php.net/get/php-7.1.12.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.1.12.tar.xz.asc/from/this/mirror"
+ENV PHP_SHA256="a0118850774571b1f2d4e30b4fe7a4b958ca66f07d07d65ebdc789c54ba6eeb3" PHP_MD5=""
 
 RUN set -xe; \
 	\
@@ -125,9 +125,9 @@ RUN set -xe \
 		--with-openssl \
 		--with-zlib \
 		\
-# bundled pcre is too old for s390x (which isn't exactly a good sign)
-# /usr/src/php/ext/pcre/pcrelib/pcre_jit_compile.c:65:2: error: #error Unsupported architecture
-		--with-pcre-regex=/usr \
+# bundled pcre does not support JIT on s390x
+# https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
+                $(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		\
 		$PHP_EXTRA_CONFIGURE_ARGS \
 	&& make -j "$(nproc)" \
