@@ -20,11 +20,34 @@ RUN apt-get update && apt-get install -y \
 		ca-certificates \
 		curl \
 		dirmngr \
-		libcurl3 \
+		freetds-dev \
 		libargon2-0 \
+		libbz2-dev \
+		libc-client2007e-dev \
+		libcurl3 \
+		libcurl4-openssl-dev \
 		libedit2 \
+		libfreetype6-dev \
+		libgd2-dev \
+		libgdbm-dev \
+		libgmp-dev \
+		libjpeg-dev \
+		libkrb5-dev \
+		libmcrypt-dev \
+		libmhash-dev \
+		libmysqlclient-dev \
+		libpcre3-dev \
+		libpng-dev \
+		libpspell-dev \
+		libsasl2-dev \
+		libsnmp-dev \
 		libsqlite3-0 \
-		libxml2 \
+		libtidy-dev \
+		libxml2-dev \
+		libxmlrpc-epi-dev \
+		libxpm-dev \
+		libxslt1-dev \
+		unixodbc-dev \
 		xz-utils \
 	--no-install-recommends && rm -r /var/lib/apt/lists/*
 
@@ -54,6 +77,7 @@ RUN set -xe; \
 	\
 	fetchDeps=' \
 		wget \
+		subversion \
 	'; \
 	if ! command -v gpg > /dev/null; then \
 		fetchDeps="$fetchDeps \
@@ -87,10 +111,10 @@ RUN set -xe; \
 		rm -rf "$GNUPGHOME"; \
 	fi; \
 	\
+	svn export %%SVN_PATH%%/%%PHP_SHORT_VERSION%%/patches /tmp/patches; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 COPY docker-php-source /usr/local/bin/
-COPY patches /tmp/patches/
 
 RUN set -xe \
 	&& buildDeps=" \
@@ -120,3 +144,6 @@ RUN set -xe \
 	&& if [ ! -d /usr/include/curl ]; then \
 		ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl; \
 	fi \
+# Fix libc-client  (libc-client.so require for -fpie)
+	&& ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a \
+	&& ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so \

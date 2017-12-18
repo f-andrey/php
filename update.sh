@@ -61,6 +61,8 @@ if [ ${#versions[@]} -eq 0 ]; then
 fi
 versions=( "${versions[@]%/}" )
 
+svnPath="https://github.com/f-andrey/php/branches/diphost"
+
 generated_warning() {
 	cat <<-EOH
 		#
@@ -199,7 +201,9 @@ for version in "${versions[@]}"; do
 	(
 		set -x
 		sed -ri \
+			-e 's!%%SVN_PATH%%!'"$svnPath"'!' \
 			-e 's!%%PHP_VERSION%%!'"$fullVersion"'!' \
+			-e 's!%%PHP_SHORT_VERSION%%!'"$version"'!' \
 			-e 's!%%GPG_KEYS%%!'"$gpgKey"'!' \
 			-e 's!%%PHP_URL%%!'"$url"'!' \
 			-e 's!%%PHP_ASC_URL%%!'"$ascUrl"'!' \

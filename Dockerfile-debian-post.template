@@ -1,30 +1,118 @@
+	&& PHP_LIST_CONFIGURE_ARGS=" \
+#		--with-apxs2=/usr/bin/apxs \
+		--enable-phpdbg \
+		--disable-cgi \
+		--enable-ipv6 \
+		--with-openssl \
+		--with-pcre-regex=/usr \
+		--enable-libxml=shared \
+		--with-pcre-regex \
+		--with-sqlite3=shared \
+		--with-zlib=shared,/usr \
+		--with-zlib-dir=/usr \
+		--enable-bcmath=shared, \
+		--with-bz2=shared \
+		--enable-calendar=shared \
+		--enable-ctype=shared, \
+		--with-curl=shared, \
+		--enable-dba=shared, \
+		--enable-inifile \
+		--enable-flatfile \
+		--enable-dom=shared, \
+		--enable-exif=shared \
+		--enable-fileinfo=shared \
+		--enable-filter=shared \
+		--enable-ftp=shared \
+		--with-gd=shared \
+		--enable-gd-jis-conv \
+		--enable-gd-native-ttf \
+		--with-jpeg-dir=/usr \
+		--with-png-dir=/usr \
+		--with-freetype-dir=/usr \
+		--with-gettext=shared \
+		--with-mcrypt=shared \
+		--enable-hash \
+		--with-iconv=shared \
+		--with-imap=shared \
+		--with-kerberos \
+		--with-imap-ssl \
+		--enable-intl=shared \
+		--enable-json=shared \
+		--enable-mbstring=shared \
+		--enable-mbregex \
+		--enable-mbregex-backtrack \
+		--with-libmbfl \
+		--with-onig \
+		--enable-mysqlnd=shared \
+		--with-mysql-sock \
+		--with-mysqli=shared,mysqlnd \
+		--with-unixODBC=shared,/usr \
+		--enable-pcntl=shared \
+		--enable-pdo=shared \
+		--with-pdo-mysql=shared,mysqlnd \
+		--with-pdo-sqlite=shared,/usr \
+		--enable-phar=shared \
+		--enable-posix=shared \
+		--enable-session=shared \
+		--enable-shmop=shared \
+		--enable-simplexml=shared \
+		--enable-soap=shared \
+		--enable-sockets=shared \
+		--enable-sysvmsg=shared \
+		--enable-sysvsem=shared \
+		--enable-sysvshm=shared \
+		--enable-tokenizer=shared \
+		--enable-wddx=shared \
+		--enable-xml=shared \
+		--enable-xmlreader=shared \
+		--enable-xmlwriter=shared \
+		--with-xsl=shared \
+		--with-xmlrpc=shared,/usr \
+		--enable-zip=shared \
+		--with-gmp=shared \
+		--with-pear \
+		--enable-opcache=shared \
+		--with-system-tzdata \
+		--with-libxml-dir=/usr \
+		--with-libedit=shared \
+		--with-readline=shared \
+		--with-gdbm=shared \
+		--with-snmp=shared \
+		--with-tidy=shared \
+		--localstatedir=/var \
+		--with-libexpat-dir \
+		" \
 	&& ./configure \
 		--build="$gnuArch" \
+		--host="$gnuArch" \
+		--disable-all \
+		--enable-shared \
+		--disable-static \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
 		\
 		--disable-cgi \
 		\
 # --enable-ftp is included here because ftp_ssl_connect() needs ftp to be compiled statically (see https://github.com/docker-library/php/issues/236)
-		--enable-ftp \
+#		--enable-ftp \
 # --enable-mbstring is included here because otherwise there's no way to get pecl to use it properly (see https://github.com/docker-library/php/issues/195)
-		--enable-mbstring \
+#		--enable-mbstring \
 # --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
-		--enable-mysqlnd \
+#		--enable-mysqlnd \
 # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
 		--with-password-argon2 \
 		\
-		--with-curl \
-		--with-libedit \
-		--with-openssl \
-		--with-system-tzdata \
-		--with-zlib \
+#		--with-curl \
+#		--with-libedit \
+#		--with-openssl \
+#		--with-zlib \
 		\
 # bundled pcre does not support JIT on s390x
 # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
+		$PHP_LIST_CONFIGURE_ARGS \
 		$PHP_EXTRA_CONFIGURE_ARGS \
 	&& make -j "$(nproc)" \
 	&& make install \
@@ -36,7 +124,7 @@
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
 	\
 # https://github.com/docker-library/php/issues/443
-	&& pecl update-channels \
+#	&& pecl update-channels \
 	&& rm -rf /tmp/pear ~/.pearrc
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
