@@ -26,34 +26,20 @@ RUN apt-get update && apt-get install -y \
 		ca-certificates \
 		curl \
 		dirmngr \
-		freetds-dev \
-		libbz2-dev \
-		libc-client2007e-dev \
 		libcurl3 \
-		libcurl4-openssl-dev \
 		libedit2 \
-		libfreetype6-dev \
-		libgd2-dev \
-		libgdbm-dev \
-		libgmp-dev \
-		libjpeg-dev \
-		libkrb5-dev \
-		libmcrypt-dev \
-		libmhash-dev \
-		libmysqlclient-dev \
-		libpcre3-dev \
-		libpng-dev \
-		libpspell-dev \
-		libsasl2-dev \
-		libsnmp-dev \
 		libsqlite3-0 \
-		libtidy-dev \
-		libxml2-dev \
-		libxmlrpc-epi-dev \
-		libxpm-dev \
-		libxslt1-dev \
-		unixodbc-dev \
+		libssl1.0 \
+		libpcre3 \
+		libxml2 \
+		libxslt1.1 \
+		libzip4 \
+		mime-support \
+		ssmtp \
+		tzdata \
+		ucf \
 		xz-utils \
+		zlib1g \
 	--no-install-recommends && rm -r /var/lib/apt/lists/*
 
 ENV PHP_INI_DIR /usr/local/etc/php
@@ -191,7 +177,31 @@ RUN set -xe \
 		libsqlite3-dev \
 		libssl-dev \
 		libxml2-dev \
-		ssmtp \
+		freetds-dev \
+		libbz2-dev \
+		libc-client2007e-dev \
+		libcurl4-openssl-dev \
+		libfreetype6-dev \
+		libgd2-dev \
+		libgdbm-dev \
+		libgmp-dev \
+		libjpeg-dev \
+		libkrb5-dev \
+		libmcrypt-dev \
+		libmhash-dev \
+		libmysqlclient-dev \
+		libpcre3-dev \
+		libpng-dev \
+		libpspell-dev \
+		libsasl2-dev \
+		libsnmp-dev \
+		libtidy-dev \
+		libxml2-dev \
+		libxmlrpc-epi-dev \
+		libxpm-dev \
+		libxslt1-dev \
+		libzip-dev \
+		unixodbc-dev \
 		zlib1g-dev \
 	" \
 	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
@@ -221,11 +231,13 @@ RUN set -xe \
 		--enable-ipv6 \
 		--with-openssl \
 		--with-pcre-regex=/usr \
-		--enable-libxml=shared \
+		--enable-libxml \
 		--with-pcre-regex \
 		--with-sqlite3=shared \
 		--with-zlib=shared,/usr \
+		--with-pcre-dir \
 		--with-zlib-dir=/usr \
+		--with-libzip=/usr \
 		--enable-bcmath=shared, \
 		--with-bz2=shared \
 		--enable-calendar=shared \
@@ -234,7 +246,7 @@ RUN set -xe \
 		--enable-dba=shared, \
 		--enable-inifile \
 		--enable-flatfile \
-		--enable-dom=shared, \
+		--enable-dom \
 		--enable-exif=shared \
 		--enable-fileinfo=shared \
 		--enable-filter=shared \
@@ -279,12 +291,12 @@ RUN set -xe \
 		--enable-sysvshm=shared \
 		--enable-tokenizer=shared \
 		--enable-wddx=shared \
-		--enable-xml=shared \
+		--enable-xml \
 		--enable-xmlreader=shared \
 		--enable-xmlwriter=shared \
 		--with-xsl=shared \
-		--with-xmlrpc=shared,/usr \
-		--enable-zip=shared \
+		--with-xmlrpc \
+		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \
 		--enable-opcache=shared \
@@ -338,7 +350,7 @@ RUN set -xe \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
 	\
 # https://github.com/docker-library/php/issues/443
-#	&& pecl update-channels \
+	&& pecl update-channels \
 	&& rm -rf /tmp/pear ~/.pearrc
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
