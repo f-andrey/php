@@ -122,8 +122,8 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS 0B96609E270F565C13292B24C13C70B87267B52D 0A95E9A026542D53835E3F3A7DEC4E69FC9C83D7
 
 ENV PHP_VERSION 5.3.29
-ENV PHP_URL="https://secure.php.net/get/php-5.3.29.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-5.3.29.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="8438c2f14ab8f3d6cd2495aa37de7b559e33b610f9ab264f0c61b531bf0c262d" PHP_MD5=""
+ENV PHP_URL="https://secure.php.net/get/php-5.3.29.tar.bz2/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-5.3.29.tar.bz2.asc/from/this/mirror"
+ENV PHP_SHA256="c4e1cf6972b2a9c7f2777a18497d83bf713cdbecabb65d3ff62ba441aebb0091" PHP_MD5=""
 
 RUN set -xe; \
 	\
@@ -144,22 +144,22 @@ RUN set -xe; \
 	mkdir -p /usr/src; \
 	cd /usr/src; \
 	\
-	wget -O php.tar.xz "$PHP_URL"; \
+	wget -O php.tar.bz2 "$PHP_URL"; \
 	\
 	if [ -n "$PHP_SHA256" ]; then \
-		echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+		echo "$PHP_SHA256 *php.tar.bz2" | sha256sum -c -; \
 	fi; \
 	if [ -n "$PHP_MD5" ]; then \
-		echo "$PHP_MD5 *php.tar.xz" | md5sum -c -; \
+		echo "$PHP_MD5 *php.tar.bz2" | md5sum -c -; \
 	fi; \
 	\
 	if [ -n "$PHP_ASC_URL" ]; then \
-		wget -O php.tar.xz.asc "$PHP_ASC_URL"; \
+		wget -O php.tar.bz2.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
 		for key in $GPG_KEYS; do \
 			gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 		done; \
-		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+		gpg --batch --verify php.tar.bz2.asc php.tar.bz2; \
 		rm -rf "$GNUPGHOME"; \
 	fi; \
 	\

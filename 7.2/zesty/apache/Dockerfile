@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
 		libedit2 \
 		libsqlite3-0 \
 		libssl1.0 \
+		libtidy-0.99-0 \
 		libpcre3 \
 		libxml2 \
 		libxmlrpc-epi0 \
@@ -122,8 +123,8 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
 
 ENV PHP_VERSION 7.2.0
-ENV PHP_URL="https://secure.php.net/get/php-7.2.0.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.2.0.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="87572a6b924670a5d4aac276aaa4a94321936283df391d702c845ffc112db095" PHP_MD5=""
+ENV PHP_URL="https://secure.php.net/get/php-7.2.0.tar.bz2/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.2.0.tar.bz2.asc/from/this/mirror"
+ENV PHP_SHA256="2bfefae4226b9b97879c9d33078e50bdb5c17f45ff6e255951062a529720c64a" PHP_MD5=""
 
 RUN set -xe; \
 	\
@@ -144,22 +145,22 @@ RUN set -xe; \
 	mkdir -p /usr/src; \
 	cd /usr/src; \
 	\
-	wget -O php.tar.xz "$PHP_URL"; \
+	wget -O php.tar.bz2 "$PHP_URL"; \
 	\
 	if [ -n "$PHP_SHA256" ]; then \
-		echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+		echo "$PHP_SHA256 *php.tar.bz2" | sha256sum -c -; \
 	fi; \
 	if [ -n "$PHP_MD5" ]; then \
-		echo "$PHP_MD5 *php.tar.xz" | md5sum -c -; \
+		echo "$PHP_MD5 *php.tar.bz2" | md5sum -c -; \
 	fi; \
 	\
 	if [ -n "$PHP_ASC_URL" ]; then \
-		wget -O php.tar.xz.asc "$PHP_ASC_URL"; \
+		wget -O php.tar.bz2.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
 		for key in $GPG_KEYS; do \
 			gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 		done; \
-		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+		gpg --batch --verify php.tar.bz2.asc php.tar.bz2; \
 		rm -rf "$GNUPGHOME"; \
 	fi; \
 	\

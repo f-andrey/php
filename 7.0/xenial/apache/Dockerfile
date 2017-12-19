@@ -122,8 +122,8 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
 
 ENV PHP_VERSION 7.0.26
-ENV PHP_URL="https://secure.php.net/get/php-7.0.26.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.0.26.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="ed5cbb4bbb0ddef8985f100bba2e94002ad22a230b5da2dccfe148915df5f199" PHP_MD5=""
+ENV PHP_URL="https://secure.php.net/get/php-7.0.26.tar.bz2/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.0.26.tar.bz2.asc/from/this/mirror"
+ENV PHP_SHA256="2590d722f7b23b6a903c5a00cf04e7ee728df79d10ae473e3a81ba41588509a7" PHP_MD5=""
 
 RUN set -xe; \
 	\
@@ -144,22 +144,22 @@ RUN set -xe; \
 	mkdir -p /usr/src; \
 	cd /usr/src; \
 	\
-	wget -O php.tar.xz "$PHP_URL"; \
+	wget -O php.tar.bz2 "$PHP_URL"; \
 	\
 	if [ -n "$PHP_SHA256" ]; then \
-		echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+		echo "$PHP_SHA256 *php.tar.bz2" | sha256sum -c -; \
 	fi; \
 	if [ -n "$PHP_MD5" ]; then \
-		echo "$PHP_MD5 *php.tar.xz" | md5sum -c -; \
+		echo "$PHP_MD5 *php.tar.bz2" | md5sum -c -; \
 	fi; \
 	\
 	if [ -n "$PHP_ASC_URL" ]; then \
-		wget -O php.tar.xz.asc "$PHP_ASC_URL"; \
+		wget -O php.tar.bz2.asc "$PHP_ASC_URL"; \
 		export GNUPGHOME="$(mktemp -d)"; \
 		for key in $GPG_KEYS; do \
 			gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 		done; \
-		gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+		gpg --batch --verify php.tar.bz2.asc php.tar.bz2; \
 		rm -rf "$GNUPGHOME"; \
 	fi; \
 	\
@@ -225,6 +225,7 @@ RUN set -xe \
 # This configure patches
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
+	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& PHP_LIST_CONFIGURE_ARGS=" \
 #		--with-apxs2=/usr/bin/apxs \
 		--enable-phpdbg \

@@ -90,7 +90,7 @@ for version in "${versions[@]}"; do
 		(keys[] | select(startswith("'"$rcVersion"'."))) as $version
 		| [ $version, (
 			.[$version].source[]
-			| select(.filename | endswith(".xz"))
+			| select(.filename | endswith(scan(".?z?")))
 			|
 				"https://secure.php.net/get/" + .filename + "/from/this/mirror",
 				"https://secure.php.net/get/" + .filename + ".asc/from/this/mirror",
