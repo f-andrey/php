@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y \
 		libssl1.0 \
 		libpcre3 \
 		libxml2 \
+		libxmlrpc-epi0 \
 		libxslt1.1 \
 		libzip4 \
 		mime-support \
@@ -237,7 +238,7 @@ RUN set -xe \
 		--enable-xmlreader=shared \
 		--enable-xmlwriter=shared \
 		--with-xsl=shared \
-		--with-xmlrpc \
+		--with-xmlrpc=shared,/usr \
 		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \

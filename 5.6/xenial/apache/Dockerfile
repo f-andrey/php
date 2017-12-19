@@ -30,8 +30,10 @@ RUN apt-get update && apt-get install -y \
 		libedit2 \
 		libsqlite3-0 \
 		libssl1.0 \
+		libtidy-0.99-0 \
 		libpcre3 \
 		libxml2 \
+		libxmlrpc-epi0 \
 		libxslt1.1 \
 		libzip4 \
 		mime-support \
@@ -221,6 +223,7 @@ RUN set -xe \
 	&& ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a \
 	&& ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so \
 # This configure patches
+	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
 	&& PHP_LIST_CONFIGURE_ARGS=" \
@@ -294,7 +297,7 @@ RUN set -xe \
 		--enable-xmlreader=shared \
 		--enable-xmlwriter=shared \
 		--with-xsl=shared \
-		--with-xmlrpc \
+		--with-xmlrpc=shared,/usr \
 		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \
