@@ -1,3 +1,4 @@
 # This configure patches
+	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
