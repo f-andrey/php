@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
 		libxmlrpc-epi0 \
 		libxslt1.1 \
 		libzip4 \
+		libwebp5 \
 		mime-support \
 		ssmtp \
 		tzdata \
@@ -139,6 +140,7 @@ RUN set -xe \
 		libsasl2-dev \
 		libsnmp-dev \
 		libtidy-dev \
+		libwebp-dev \
 		libxml2-dev \
 		libxmlrpc-epi-dev \
 		libxpm-dev \
@@ -167,9 +169,15 @@ RUN set -xe \
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
 	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--enable-phpdbg \
+		--with-libzip=/usr \
+		--enable-opcache=shared \
+		--with-webp-dir=/usr \
+		--with-xpm-dir= \
+	" \
 	&& PHP_LIST_CONFIGURE_ARGS=" \
 #		--with-apxs2=/usr/bin/apxs \
-		--enable-phpdbg \
 		--disable-cgi \
 		--enable-ipv6 \
 		--with-openssl \
@@ -180,7 +188,6 @@ RUN set -xe \
 		--with-zlib=shared,/usr \
 		--with-pcre-dir \
 		--with-zlib-dir=/usr \
-		--with-libzip=/usr \
 		--enable-bcmath=shared, \
 		--with-bz2=shared \
 		--enable-calendar=shared \
@@ -196,14 +203,11 @@ RUN set -xe \
 		--enable-ftp=shared \
 		--with-gd=shared \
 		--enable-gd-jis-conv \
-		--enable-gd-native-ttf \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
 		--with-freetype-dir=/usr \
 		--with-gettext=shared \
-		--with-mcrypt=shared \
 		--enable-hash \
-		--with-iconv=shared \
 		--with-imap=shared \
 		--with-kerberos \
 		--with-imap-ssl \
@@ -242,7 +246,6 @@ RUN set -xe \
 		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \
-		--enable-opcache=shared \
 		--with-system-tzdata \
 		--with-libxml-dir=/usr \
 		--with-libedit=shared \
@@ -282,6 +285,7 @@ RUN set -xe \
 		--with-libdir="lib/$debMultiarch" \
 		\
 		$PHP_LIST_CONFIGURE_ARGS \
+		$PHP_VERSION_CONFIGURE_ARGS \
 		$PHP_EXTRA_CONFIGURE_ARGS \
 	&& make -j "$(nproc)" \
 	&& make install \

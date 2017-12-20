@@ -2,3 +2,10 @@
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
 	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--enable-phpdbg \
+		--with-libzip=/usr \
+		--enable-opcache=shared \
+		--with-webp-dir=/usr \
+		--with-xpm-dir= \
+	" \
