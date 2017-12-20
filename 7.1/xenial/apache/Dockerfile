@@ -229,6 +229,8 @@ RUN set -xe \
 	&& ./buildconf --force \
 	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--with-xmlrpc=shared,/usr \
+		--with-pcre-regex=/usr \
 		--enable-phpdbg \
 		--with-libzip=/usr \
 		--enable-opcache=shared \
@@ -240,7 +242,6 @@ RUN set -xe \
 		--disable-cgi \
 		--enable-ipv6 \
 		--with-openssl \
-		--with-pcre-regex=/usr \
 		--enable-libxml \
 		--with-pcre-regex \
 		--with-sqlite3=shared \
@@ -301,7 +302,6 @@ RUN set -xe \
 		--enable-xmlreader=shared \
 		--enable-xmlwriter=shared \
 		--with-xsl=shared \
-		--with-xmlrpc=shared,/usr \
 		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \

@@ -3,6 +3,8 @@
 	&& ./buildconf --force \
 	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--with-xmlrpc=shared,/usr \
+		--with-pcre-regex=/usr \
 		--enable-phpdbg \
 		--with-libzip=/usr \
 		--enable-opcache=shared \

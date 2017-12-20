@@ -3,7 +3,6 @@
 		--disable-cgi \
 		--enable-ipv6 \
 		--with-openssl \
-		--with-pcre-regex=/usr \
 		--enable-libxml \
 		--with-pcre-regex \
 		--with-sqlite3=shared \
@@ -64,7 +63,6 @@
 		--enable-xmlreader=shared \
 		--enable-xmlwriter=shared \
 		--with-xsl=shared \
-		--with-xmlrpc=shared,/usr \
 		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \

@@ -233,6 +233,8 @@ RUN set -xe \
 	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
 	&& ./buildconf --force \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--with-xmlrpc=shared,/usr \
+		--with-pcre-regex=/usr \
 		--enable-phpdbg \
 		--with-libzip=/usr \
 		--enable-opcache=shared \
@@ -246,7 +248,6 @@ RUN set -xe \
 		--disable-cgi \
 		--enable-ipv6 \
 		--with-openssl \
-		--with-pcre-regex=/usr \
 		--enable-libxml \
 		--with-pcre-regex \
 		--with-sqlite3=shared \
@@ -307,7 +308,6 @@ RUN set -xe \
 		--enable-xmlreader=shared \
 		--enable-xmlwriter=shared \
 		--with-xsl=shared \
-		--with-xmlrpc=shared,/usr \
 		--enable-zip \
 		--with-gmp=shared \
 		--with-pear \
