@@ -179,6 +179,8 @@ RUN set -xe \
 		--enable-opcache=shared \
 		--with-vpx-dir=/usr \
 		--with-xpm-dir= \
+		--with-regex=php \
+		--with-zend-vm=CALL \
 	" \
 	&& PHP_LIST_CONFIGURE_ARGS=" \
 #		--with-apxs2=/usr/bin/apxs \
