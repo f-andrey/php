@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
 		libxmlrpc-epi0 \
 		libxslt1.1 \
 		libzip4 \
+		libwebp5 \
 		mime-support \
 		ssmtp \
 		tzdata \
@@ -135,6 +136,7 @@ RUN set -xe \
 		libsasl2-dev \
 		libsnmp-dev \
 		libtidy-dev \
+		libwebp-dev \
 		libxml2-dev \
 		libxmlrpc-epi-dev \
 		libxpm-dev \
