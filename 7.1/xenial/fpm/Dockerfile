@@ -171,6 +171,10 @@ RUN set -xe \
 	&& ./buildconf --force \
 	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--with-openssl \
+		--with-sqlite3=shared \
+		--with-iconv=shared \
+		--with-libexpat-dir \
 		--with-xmlrpc=shared,/usr \
 		--with-pcre-regex=/usr \
 		--enable-phpdbg \
@@ -183,10 +187,8 @@ RUN set -xe \
 #		--with-apxs2=/usr/bin/apxs \
 		--disable-cgi \
 		--enable-ipv6 \
-		--with-openssl \
 		--enable-libxml \
 		--with-pcre-regex \
-		--with-sqlite3=shared \
 		--with-zlib=shared,/usr \
 		--with-pcre-dir \
 		--with-zlib-dir=/usr \
@@ -255,7 +257,6 @@ RUN set -xe \
 		--with-snmp=shared \
 		--with-tidy=shared \
 		--localstatedir=/var \
-		--with-libexpat-dir \
 		" \
 	&& ./configure \
 		--build="$gnuArch" \

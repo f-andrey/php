@@ -7,6 +7,10 @@
 	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; done \
 	&& ./buildconf --force \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
+		--with-openssl \
+		--with-sqlite3=shared \
+		--with-iconv=shared \
+		--with-libexpat-dir \
 		--with-xmlrpc=shared \
 		--with-xpm-dir= \
 		--with-regex=php \

@@ -2,10 +2,8 @@
 #		--with-apxs2=/usr/bin/apxs \
 		--disable-cgi \
 		--enable-ipv6 \
-		--with-openssl \
 		--enable-libxml \
 		--with-pcre-regex \
-		--with-sqlite3=shared \
 		--with-zlib=shared,/usr \
 		--with-pcre-dir \
 		--with-zlib-dir=/usr \
@@ -74,7 +72,6 @@
 		--with-snmp=shared \
 		--with-tidy=shared \
 		--localstatedir=/var \
-		--with-libexpat-dir \
 		" \
 	&& ./configure \
 		--build="$gnuArch" \
