@@ -1,36 +1,36 @@
---- a/src/configure	2017-03-13 19:58:48.770883549 +0300
-+++ b/src/configure	2017-03-13 20:01:35.901302238 +0300
-@@ -5152,7 +5152,7 @@ $as_echo "no" >&6; }
+--- a/src/configure	2017-12-21 19:35:54.091924298 +0300
++++ b/src/configure	2017-12-21 19:42:45.048847884 +0300
+@@ -2964,7 +2964,7 @@ echo "configure:2954: checking if $AWK i
  
  
  
 -  for ac_prog in 'bison -y' byacc
 +  for ac_prog in '/opt/bison/bin/bison -y' byacc
  do
-   # Extract the first word of "$ac_prog", so it can be a program name with args.
+ # Extract the first word of "$ac_prog", so it can be a program name with args.
  set dummy $ac_prog; ac_word=$2
-@@ -5193,7 +5193,7 @@ fi
+@@ -2997,7 +2997,7 @@ fi
  
-   test -n "$YACC" && break
+ test -n "$YACC" && break
  done
 -test -n "$YACC" || YACC="yacc"
-+test -n "$YACC" || YACC="/opt/bison/bin/bison"
++test -n "$YACC" || YACC="/opt/bison/bin/yacc"
  
- 
+   
    # we only support certain bison versions
-@@ -5210,7 +5210,7 @@ if ${php_cv_bison_version+:} false; then
-   $as_echo_n "(cached) " >&6
+@@ -3014,7 +3014,7 @@ if eval "test \"`echo '$''{'php_cv_bison
+   echo $ac_n "(cached) $ac_c" 1>&6
  else
- 
+   
 -      bison_version_vars=`bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
 +      bison_version_vars=`/opt/bison/bin/bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
        php_cv_bison_version=invalid
        if test -n "$bison_version_vars"; then
          set $bison_version_vars
-@@ -104920,7 +104920,7 @@ if ${php_cv_bison_version+:} false; then
-   $as_echo_n "(cached) " >&6
+@@ -105210,7 +105210,7 @@ if eval "test \"`echo '$''{'php_cv_bison
+   echo $ac_n "(cached) $ac_c" 1>&6
  else
- 
+   
 -      bison_version_vars=`bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
 +      bison_version_vars=`/opt/bison/bin/bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
        php_cv_bison_version=invalid
