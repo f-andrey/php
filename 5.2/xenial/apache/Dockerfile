@@ -230,7 +230,7 @@ RUN set -xe \
 	&& cd /opt/bison-2.4 && ./configure --prefix=/opt/bison && make install clean \
 	&& cd /usr/src/php && rm -Rf /opt/bison-2.4 && export YACC=/opt/bison/bin/bison \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
-	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; done \
+	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; echo $i; done \
 	&& ./buildconf --force \
 	&& patch -N -p2 -s < /tmp/patches/0000_bison-flex.patch \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
