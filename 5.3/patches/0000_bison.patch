@@ -1,4 +1,4 @@
---- configure.orig	2017-12-21 20:33:18.972354408 +0300
+--- configure	2017-12-21 20:33:18.972354408 +0300
 +++ configure	2017-12-21 20:34:35.676495586 +0300
 @@ -1967,7 +1967,7 @@ Some influential environment variables:
                you have headers in a nonstandard directory <include dir>
