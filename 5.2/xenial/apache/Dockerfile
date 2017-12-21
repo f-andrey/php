@@ -225,10 +225,10 @@ RUN set -xe \
 	&& ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a \
 	&& ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so \
 # This configure patches
-	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.xz -o /tmp/bison-2.4.tar.xz \
-	&& mkdir -p /opt/bison && cd /opt/ && tar xvf /tmp/bison-2.4.tar.xz \
+	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
+	&& mkdir -p /opt/bison && cd /opt/ && tar xvf /tmp/bison-2.4.tar.bz2 \
 	&& cd /opt/bison-2.4 && ./configure --prefix=/opt/bison && make install clean \
-	&& cd /usr/src/php && rm -Rf /opt/bison-2.6.4 && export YACC=/opt/bison/bin/bison \
+	&& cd /usr/src/php && rm -Rf /opt/bison-2.4 && export YACC=/opt/bison/bin/bison \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
 	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; done \
 	&& ./buildconf --force \
