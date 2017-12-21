@@ -23,7 +23,7 @@
  else
    
 -      bison_version_vars=`bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
-+      bison_version_vars=`/opt/bison/bin/bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
++      bison_version_vars=`/opt/bison/bin/bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | $SED -e 's/\./ /' | tr -d a-z`
        php_cv_bison_version=invalid
        if test -n "$bison_version_vars"; then
          set $bison_version_vars
@@ -32,7 +32,7 @@
  else
    
 -      bison_version_vars=`bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
-+      bison_version_vars=`/opt/bison/bin/bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | tr -d a-z`
++      bison_version_vars=`/opt/bison/bin/bison --version 2> /dev/null | grep 'GNU Bison' | cut -d ' ' -f 4 | $SED -e 's/\./ /' | $SED -e 's/\./ /' | tr -d a-z`
        php_cv_bison_version=invalid
        if test -n "$bison_version_vars"; then
          set $bison_version_vars
