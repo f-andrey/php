@@ -1,0 +1,11 @@
+--- a/src/ext/pcre/config0.m4
++++ b/src/ext/pcre/config0.m4
+@@ -24,7 +24,7 @@
+       AC_MSG_ERROR([Could not find pcre.h in $PHP_PCRE_REGEX])
+     fi
+ 
+-    for j in $PHP_PCRE_REGEX $PHP_PCRE_REGEX/$PHP_LIBDIR; do
++    for j in $PHP_PCRE_REGEX $PHP_PCRE_REGEX/$PHP_LIBDIR $PHP_PCRE_REGEX/$PHP_LIBDIR/$DEB_HOST_MULTIARCH; do
+       test -f $j/libpcre.a || test -f $j/libpcre.$SHLIB_SUFFIX_NAME && PCRE_LIBDIR=$j
+     done
+     

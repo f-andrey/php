@@ -1,0 +1,50 @@
+--- a/src/ext/gd/config.m4
++++ b/src/ext/gd/config.m4
+@@ -75,7 +75,7 @@
+   if test "$PHP_JPEG_DIR" != "no"; then
+ 
+     for i in $PHP_JPEG_DIR /usr/local /usr; do
+-      test -f $i/$PHP_LIBDIR/libjpeg.$SHLIB_SUFFIX_NAME || test -f $i/$PHP_LIBDIR/libjpeg.a && GD_JPEG_DIR=$i && break
++      test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libjpeg.$SHLIB_SUFFIX_NAME || test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libjpeg.a && GD_JPEG_DIR=$i && break
+     done
+ 
+     if test -z "$GD_JPEG_DIR"; then
+@@ -100,7 +100,7 @@
+   if test "$PHP_PNG_DIR" != "no"; then
+ 
+     for i in $PHP_PNG_DIR /usr/local /usr; do
+-      test -f $i/$PHP_LIBDIR/libpng.$SHLIB_SUFFIX_NAME || test -f $i/$PHP_LIBDIR/libpng.a && GD_PNG_DIR=$i && break
++      test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libpng.$SHLIB_SUFFIX_NAME || test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libpng.a && GD_PNG_DIR=$i && break
+     done
+ 
+     if test -z "$GD_PNG_DIR"; then
+@@ -135,7 +135,7 @@
+   if test "$PHP_XPM_DIR" != "no"; then
+ 
+     for i in $PHP_XPM_DIR /usr/local /usr/X11R6 /usr; do
+-      test -f $i/$PHP_LIBDIR/libXpm.$SHLIB_SUFFIX_NAME || test -f $i/$PHP_LIBDIR/libXpm.a && GD_XPM_DIR=$i && break
++      test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libXpm.$SHLIB_SUFFIX_NAME || test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libXpm.a && GD_XPM_DIR=$i && break
+     done
+ 
+     if test -z "$GD_XPM_DIR"; then
+@@ -209,6 +209,11 @@
+         FREETYPE2_INC_DIR=$i/include/freetype2
+         break
+       fi
++      if test -f "$i/include/freetype2/freetype.h"; then
++        FREETYPE2_DIR=$i
++        FREETYPE2_INC_DIR=$i/include/freetype2
++        break
++      fi
+     done
+ 
+     if test -z "$FREETYPE2_DIR"; then
+@@ -402,7 +407,7 @@
+ 
+ dnl Library path
+   for i in $PHP_LIBDIR/gd1.3 $PHP_LIBDIR/gd $PHP_LIBDIR gd1.3 gd ""; do
+-    test -f "$PHP_GD/$i/libgd.$SHLIB_SUFFIX_NAME" || test -f "$PHP_GD/$i/libgd.a" && GD_LIB="$PHP_GD/$i"
++    test -f "$PHP_GD/$i/$DEB_HOST_MULTIARCH/libgd.$SHLIB_SUFFIX_NAME" || test -f "$PHP_GD/$i/$DEB_HOST_MULTIARCH/libgd.a" && GD_LIB="$PHP_GD/$i"
+   done
+ 
+   if test -n "$GD_INCLUDE" && test -n "$GD_LIB"; then

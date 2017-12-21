@@ -1,0 +1,16 @@
+diff -up php-5.2.17/Zend/zend_execute.c.bug-62005 php-5.2.17/Zend/zend_execute.c
+--- php-5.2.17/src/Zend/zend_execute.c.bug-62005	2012-07-23 01:52:18.000000000 -0400
++++ php-5.2.17/src/Zend/zend_execute.c	2012-07-23 01:52:28.000000000 -0400
+@@ -436,11 +436,11 @@ static inline void make_real_object(zval
+ 		|| (Z_TYPE_PP(object_ptr) == IS_BOOL && Z_LVAL_PP(object_ptr) == 0)
+ 		|| (Z_TYPE_PP(object_ptr) == IS_STRING && Z_STRLEN_PP(object_ptr) == 0)
+ 	) {
+-		zend_error(E_STRICT, "Creating default object from empty value");
+ 
+ 		SEPARATE_ZVAL_IF_NOT_REF(object_ptr);
+ 		zval_dtor(*object_ptr);
+ 		object_init(*object_ptr);
++		zend_error(E_STRICT, "Creating default object from empty value");
+ 	}
+ }
+ 

@@ -1,0 +1,12 @@
+Index: php52-5.2.17.1/src/ext/openssl/config0.m4
+===================================================================
+--- php52-5.2.17.1.orig/src/ext/openssl/config0.m4	2007-01-07 21:38:22.000000000 +0300
++++ php52-5.2.17.1/src/ext/openssl/config0.m4	2016-11-15 03:43:33.423701706 +0300
+@@ -17,6 +17,7 @@
+   fi
+ 
+   AC_CHECK_LIB(ssl, DSA_get_default_method, AC_DEFINE(HAVE_DSA_DEFAULT_METHOD, 1, [OpenSSL 0.9.7 or later]))
++  AC_CHECK_LIB(crypto, X509_free, AC_DEFINE(HAVE_DSA_DEFAULT_METHOD, 1, [OpenSSL 0.9.7 or later]))
+ 
+   PHP_SETUP_OPENSSL(OPENSSL_SHARED_LIBADD, 
+   [

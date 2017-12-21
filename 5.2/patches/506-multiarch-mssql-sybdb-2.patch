@@ -1,0 +1,36 @@
+--- a/src/ext/mssql/config.m4
++++ b/src/ext/mssql/config.m4
+@@ -38,12 +38,12 @@
+     fi
+   fi  
+ 
+-  if test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a" && test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.so"; then
+-     AC_MSG_ERROR(Could not find $FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.[a|so])
++  if test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.a" && test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.so"; then
++     AC_MSG_ERROR(Could not find $FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.[a|so])
+   fi
+ 
+   PHP_ADD_INCLUDE($FREETDS_INCLUDE_DIR)
+-  PHP_ADD_LIBRARY_WITH_PATH(sybdb, $FREETDS_INSTALLATION_DIR/$PHP_LIBDIR, MSSQL_SHARED_LIBADD)
++  PHP_ADD_LIBRARY_WITH_PATH(sybdb, $FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH, MSSQL_SHARED_LIBADD)
+ 
+   PHP_NEW_EXTENSION(mssql, php_mssql.c, $ext_shared)
+   AC_CHECK_LIB(dnet_stub, dnet_addr,
+--- a/src/ext/pdo_dblib/config.m4
++++ b/src/ext/pdo_dblib/config.m4
+@@ -45,12 +45,12 @@
+     PHP_LIBDIR=lib
+   fi
+ 
+-  if test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a" && test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.so"; then
+-     AC_MSG_ERROR(Could not find $PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.[a|so])
++  if test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.a" && test ! -r "$PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.so"; then
++     AC_MSG_ERROR(Could not find $PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libsybdb.[a|so])
+   fi
+ 
+   PHP_ADD_INCLUDE($PDO_FREETDS_INCLUDE_DIR)
+-  PHP_ADD_LIBRARY_WITH_PATH(sybdb, $PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR, PDO_DBLIB_SHARED_LIBADD)
++  PHP_ADD_LIBRARY_WITH_PATH(sybdb, $PDO_FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/$DEB_HOST_MULTIARCH, PDO_DBLIB_SHARED_LIBADD)
+ 
+   ifdef([PHP_CHECK_PDO_INCLUDES],
+   [

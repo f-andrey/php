@@ -1,0 +1,14 @@
+diff -up php-5.2.17/ext/reflection/php_reflection.c.bug-62715 php-5.2.17/ext/reflection/php_reflection.c
+--- php-5.2.17/src/ext/reflection/php_reflection.c.bug-62715	2012-08-22 09:47:26.000000000 +0700
++++ php-5.2.17/src/ext/reflection/php_reflection.c	2012-08-22 09:47:40.000000000 +0700
+@@ -2131,9 +2131,7 @@ ZEND_METHOD(reflection_parameter, isDefa
+ 	{
+ 		RETURN_FALSE;
+ 	}
+-	if (param->offset < param->required) {
+-		RETURN_FALSE;
+-	}
++
+ 	precv = _get_recv_op((zend_op_array*)param->fptr, param->offset);
+ 	if (!precv || precv->opcode != ZEND_RECV_INIT || precv->op2.op_type == IS_UNUSED) {
+ 		RETURN_FALSE;

@@ -1,0 +1,17 @@
+diff -up php-5.2.17/main/streams/streams.c.bug-61961 php-5.2.17/main/streams/streams.c
+--- php-5.2.17/src/main/streams/streams.c.bug-61961	2012-07-23 22:44:09.000000000 -0400
++++ php-5.2.17/src/main/streams/streams.c	2012-07-23 22:44:56.000000000 -0400
+@@ -1262,7 +1262,12 @@ PHPAPI size_t _php_stream_copy_to_mem(ph
+ 			len += ret;
+ 			ptr += ret;
+ 		}
+-		*ptr = '\0';
++		if (len) {
++			*ptr = '\0';
++		} else {
++			pefree(*buf, persistent);
++			*buf = NULL;
++		}
+ 		return len;
+ 	}
+ 

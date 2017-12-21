@@ -1,0 +1,26 @@
+--- a/src/main/php_variables.c
++++ b/src/main/php_variables.c
+@@ -178,7 +178,11 @@ PHPAPI void php_register_variable_ex(cha
+ 			if (!index) {
+ 				MAKE_STD_ZVAL(gpc_element);
+ 				array_init(gpc_element);
+-				zend_hash_next_index_insert(symtable1, &gpc_element, sizeof(zval *), (void **) &gpc_element_p);
++				if (zend_hash_next_index_insert(symtable1, &gpc_element, sizeof(zval *), (void **) &gpc_element_p) == FAILURE) {
++					zval_ptr_dtor(&gpc_element);
++					zval_dtor(val);
++					return;
++				}
+ 			} else {
+ 				if (PG(magic_quotes_gpc)) {
+ 					escaped_index = php_addslashes(index, index_len, &index_len, 0 TSRMLS_CC);
+@@ -219,7 +229,9 @@ plain_var:
+ 		gpc_element->value = val->value;
+ 		Z_TYPE_P(gpc_element) = Z_TYPE_P(val);
+ 		if (!index) {
+-			zend_hash_next_index_insert(symtable1, &gpc_element, sizeof(zval *), (void **) &gpc_element_p);
++			if (zend_hash_next_index_insert(symtable1, &gpc_element, sizeof(zval *), (void **) &gpc_element_p) == FAILURE) {
++				zval_ptr_dtor(&gpc_element);
++			}
+ 		} else {
+ 			if (PG(magic_quotes_gpc)) { 
+ 				escaped_index = php_addslashes(index, index_len, &index_len, 0 TSRMLS_CC);

@@ -1,0 +1,36 @@
+--- php52-5.2.17/src/ext/dom/node.c.orig	2010-05-01 22:30:38.000000000 +0400
++++ php52-5.2.17/src/ext/dom/node.c	2014-11-14 19:48:48.000000000 +0300
+@@ -1950,9 +1950,9 @@
+         RETVAL_FALSE;
+     } else {
+ 		if (mode == 0) {
+-			ret = buf->buffer->use;
++			ret = xmlOutputBufferGetSize(buf);
+ 			if (ret > 0) {
+-				RETVAL_STRINGL((char *) buf->buffer->content, ret, 1);
++				RETVAL_STRINGL((char *) xmlOutputBufferGetContent(buf), ret, 1);
+ 			} else {
+ 				RETVAL_EMPTY_STRING();
+ 			}
+--- php52-5.2.17/src/ext/dom/documenttype.c.orig	2010-01-03 12:23:27.000000000 +0300
++++ php52-5.2.17/src/ext/dom/documenttype.c	2014-11-14 19:54:51.000000000 +0300
+@@ -215,7 +215,7 @@
+ 		if (buff != NULL) {
+ 			xmlNodeDumpOutput (buff, NULL, (xmlNodePtr) intsubset, 0, 0, NULL);
+ 			xmlOutputBufferFlush(buff);
+-			ZVAL_STRINGL(*retval, buff->buffer->content, buff->buffer->use, 1);
++			ZVAL_STRINGL(*retval, xmlOutputBufferGetContent(buff), xmlOutputBufferGetSize(buff), 1);
+ 			(void)xmlOutputBufferClose(buff);
+ 			return SUCCESS;
+ 		}
+--- php52-5.2.17/src/ext/simplexml/simplexml.c.orig	2010-05-05 15:40:11.000000000 +0400
++++ php52-5.2.17/src/ext/simplexml/simplexml.c	2014-11-14 19:59:58.000000000 +0300
+@@ -1343,7 +1343,7 @@
+ 
+ 			xmlNodeDumpOutput(outbuf, (xmlDocPtr) sxe->document->ptr, node, 0, 0, ((xmlDocPtr) sxe->document->ptr)->encoding);
+ 			xmlOutputBufferFlush(outbuf);
+-			RETVAL_STRINGL((char *)outbuf->buffer->content, outbuf->buffer->use, 1);
++			RETVAL_STRINGL((char *)xmlOutputBufferGetContent(outbuf), xmlOutputBufferGetSize(outbuf), 1);
+ 			xmlOutputBufferClose(outbuf);
+ 		}
+ 	} else {

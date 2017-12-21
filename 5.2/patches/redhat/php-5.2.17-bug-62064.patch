@@ -1,0 +1,19 @@
+diff -up php-5.2.17/ext/xmlwriter/php_xmlwriter.c.bug-62064 php-5.2.17/ext/xmlwriter/php_xmlwriter.c
+--- php-5.2.17/src/ext/xmlwriter/php_xmlwriter.c.bug-62064	2012-07-23 22:56:00.000000000 -0400
++++ php-5.2.17/src/ext/xmlwriter/php_xmlwriter.c	2012-07-23 22:56:35.000000000 -0400
+@@ -312,6 +312,7 @@ static char *_xmlwriter_get_valid_file_p
+ 		/* absolute file uris - libxml only supports localhost or empty host */
+ 		if (strncasecmp(source, "file:///", 8) == 0) {
+ 			if (source[sizeof("file:///") - 1] == '\0') {
++				xmlFreeURI(uri);
+ 				return NULL;
+ 			}
+ 			isFileUri = 1;
+@@ -322,6 +323,7 @@ static char *_xmlwriter_get_valid_file_p
+ #endif
+ 		} else if (strncasecmp(source, "file://localhost/",17) == 0) {
+ 			if (source[sizeof("file://localhost/") - 1] == '\0') {
++				xmlFreeURI(uri);
+ 				return NULL;
+ 			}
+ 

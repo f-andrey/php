@@ -1,0 +1,11 @@
+--- a/src/acinclude.m4
++++ b/src/acinclude.m4
+@@ -2265,7 +2265,7 @@
+     fi
+ 
+     for i in $PHP_KERBEROS; do
+-      if test -f $i/$PHP_LIBDIR/libkrb5.a || test -f $i/$PHP_LIBDIR/libkrb5.$SHLIB_SUFFIX_NAME; then
++      if test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libkrb5.a || test -f $i/$PHP_LIBDIR/$DEB_HOST_MULTIARCH/libkrb5.$SHLIB_SUFFIX_NAME; then
+         PHP_KERBEROS_DIR=$i
+         break
+       fi

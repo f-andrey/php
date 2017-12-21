@@ -1,0 +1,227 @@
+diff -up php-5.2.17/ext/com_dotnet/com_misc.c.bug-62146 php-5.2.17/ext/com_dotnet/com_misc.c
+--- php-5.2.17/src/ext/com_dotnet/com_misc.c.bug-62146	2012-07-23 21:48:45.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/com_misc.c	2012-07-23 21:49:37.000000000 -0400
+@@ -42,7 +42,7 @@ void php_com_throw_exception(HRESULT cod
+ 	}
+ }
+ 
+-PHPAPI void php_com_wrap_dispatch(zval *z, IDispatch *disp,
++PHP_COM_DOTNET_API void php_com_wrap_dispatch(zval *z, IDispatch *disp,
+ 		int codepage TSRMLS_DC)
+ {
+ 	php_com_dotnet_object *obj;
+@@ -65,7 +65,7 @@ PHPAPI void php_com_wrap_dispatch(zval *
+ 	z->value.obj.handlers = &php_com_object_handlers;
+ }
+ 
+-PHPAPI void php_com_wrap_variant(zval *z, VARIANT *v,
++PHP_COM_DOTNET_API void php_com_wrap_variant(zval *z, VARIANT *v,
+ 		int codepage TSRMLS_DC)
+ {
+ 	php_com_dotnet_object *obj;
+@@ -92,7 +92,7 @@ PHPAPI void php_com_wrap_variant(zval *z
+ 
+ /* this is a convenience function for fetching a particular
+  * element from a (possibly multi-dimensional) safe array */
+-PHPAPI int php_com_safearray_get_elem(VARIANT *array, VARIANT *dest, LONG dim1 TSRMLS_DC)
++PHP_COM_DOTNET_API int php_com_safearray_get_elem(VARIANT *array, VARIANT *dest, LONG dim1 TSRMLS_DC)
+ {
+ 	UINT dims;
+ 	LONG lbound, ubound;
+diff -up php-5.2.17/ext/com_dotnet/com_olechar.c.bug-62146 php-5.2.17/ext/com_dotnet/com_olechar.c
+--- php-5.2.17/src/ext/com_dotnet/com_olechar.c.bug-62146	2012-07-23 21:49:53.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/com_olechar.c	2012-07-23 21:50:30.000000000 -0400
+@@ -30,7 +30,7 @@
+ #include "php_com_dotnet_internal.h"
+ 
+ 
+-PHPAPI OLECHAR *php_com_string_to_olestring(char *string, uint string_len, int codepage TSRMLS_DC)
++PHP_COM_DOTNET_API OLECHAR *php_com_string_to_olestring(char *string, uint string_len, int codepage TSRMLS_DC)
+ {
+ 	OLECHAR *olestring = NULL;
+ 	DWORD flags = codepage == CP_UTF8 ? 0 : MB_PRECOMPOSED | MB_ERR_INVALID_CHARS;
+@@ -65,7 +65,7 @@ PHPAPI OLECHAR *php_com_string_to_olestr
+ 	return olestring;
+ }
+ 
+-PHPAPI char *php_com_olestring_to_string(OLECHAR *olestring, uint *string_len, int codepage TSRMLS_DC)
++PHP_COM_DOTNET_API char *php_com_olestring_to_string(OLECHAR *olestring, uint *string_len, int codepage TSRMLS_DC)
+ {
+ 	char *string;
+ 	uint length = 0;
+diff -up php-5.2.17/ext/com_dotnet/com_persist.c.bug-62146 php-5.2.17/ext/com_dotnet/com_persist.c
+--- php-5.2.17/src/ext/com_dotnet/com_persist.c.bug-62146	2012-07-23 21:50:56.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/com_persist.c	2012-07-23 21:51:11.000000000 -0400
+@@ -271,7 +271,7 @@ static void istream_destructor(php_istre
+ }
+ /* }}} */
+ 
+-PHPAPI IStream *php_com_wrapper_export_stream(php_stream *stream TSRMLS_DC)
++PHP_COM_DOTNET_API IStream *php_com_wrapper_export_stream(php_stream *stream TSRMLS_DC)
+ {
+ 	php_istream *stm = (php_istream*)CoTaskMemAlloc(sizeof(*stm));
+ 
+diff -up php-5.2.17/ext/com_dotnet/com_typeinfo.c.bug-62146 php-5.2.17/ext/com_dotnet/com_typeinfo.c
+--- php-5.2.17/src/ext/com_dotnet/com_typeinfo.c.bug-62146	2012-07-23 21:51:27.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/com_typeinfo.c	2012-07-23 21:52:11.000000000 -0400
+@@ -35,7 +35,7 @@
+  * b) a CLSID, major, minor e.g. "{00000200-0000-0010-8000-00AA006D2EA4},2,0"
+  * c) a Type Library name e.g. "Microsoft OLE DB ActiveX Data Objects 1.0 Library"
+  */
+-PHPAPI ITypeLib *php_com_load_typelib(char *search_string, int codepage TSRMLS_DC)
++PHP_COM_DOTNET_API ITypeLib *php_com_load_typelib(char *search_string, int codepage TSRMLS_DC)
+ {
+ 	ITypeLib *TL = NULL;
+ 	char *strtok_buf, *major, *minor;
+@@ -153,7 +153,7 @@ PHPAPI ITypeLib *php_com_load_typelib(ch
+ }
+ 
+ /* Given a type-library, merge it into the current engine state */
+-PHPAPI int php_com_import_typelib(ITypeLib *TL, int mode, int codepage TSRMLS_DC)
++PHP_COM_DOTNET_API int php_com_import_typelib(ITypeLib *TL, int mode, int codepage TSRMLS_DC)
+ {
+ 	int i, j, interfaces;
+ 	TYPEKIND pTKind;
+@@ -224,7 +224,7 @@ void php_com_typelibrary_dtor(void *pDes
+ 	ITypeLib_Release(*Lib);
+ }
+ 
+-PHPAPI ITypeLib *php_com_load_typelib_via_cache(char *search_string,
++PHP_COM_DOTNET_API ITypeLib *php_com_load_typelib_via_cache(char *search_string,
+ 	int codepage, int *cached TSRMLS_DC)
+ {
+ 	ITypeLib **TLp;
+diff -up php-5.2.17/ext/com_dotnet/com_variant.c.bug-62146 php-5.2.17/ext/com_dotnet/com_variant.c
+--- php-5.2.17/src/ext/com_dotnet/com_variant.c.bug-62146	2012-07-23 21:52:31.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/com_variant.c	2012-07-23 21:53:23.000000000 -0400
+@@ -98,7 +98,7 @@ bogus:
+ 	}
+ }
+ 
+-PHPAPI void php_com_variant_from_zval(VARIANT *v, zval *z, int codepage TSRMLS_DC)
++PHP_COM_DOTNET_API void php_com_variant_from_zval(VARIANT *v, zval *z, int codepage TSRMLS_DC)
+ {
+ 	OLECHAR *olestring;
+ 	php_com_dotnet_object *obj;
+@@ -166,7 +166,7 @@ PHPAPI void php_com_variant_from_zval(VA
+ 	}
+ }
+ 
+-PHPAPI int php_com_zval_from_variant(zval *z, VARIANT *v, int codepage TSRMLS_DC)
++PHP_COM_DOTNET_API int php_com_zval_from_variant(zval *z, VARIANT *v, int codepage TSRMLS_DC)
+ {
+ 	OLECHAR *olestring = NULL;
+ 	int ret = SUCCESS;
+@@ -258,7 +258,7 @@ PHPAPI int php_com_zval_from_variant(zva
+ }
+ 
+ 
+-PHPAPI int php_com_copy_variant(VARIANT *dstvar, VARIANT *srcvar TSRMLS_DC)
++PHP_COM_DOTNET_API int php_com_copy_variant(VARIANT *dstvar, VARIANT *srcvar TSRMLS_DC)
+ {
+ 	int ret = SUCCESS;
+ 	
+diff -up php-5.2.17/ext/com_dotnet/com_wrapper.c.bug-62146 php-5.2.17/ext/com_dotnet/com_wrapper.c
+--- php-5.2.17/src/ext/com_dotnet/com_wrapper.c.bug-62146	2012-07-23 21:53:40.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/com_wrapper.c	2012-07-23 21:54:13.000000000 -0400
+@@ -586,7 +586,7 @@ static void disp_destructor(php_dispatch
+ 	CoTaskMemFree(disp);
+ }
+ 
+-PHPAPI IDispatch *php_com_wrapper_export_as_sink(zval *val, GUID *sinkid,
++PHP_COM_DOTNET_API IDispatch *php_com_wrapper_export_as_sink(zval *val, GUID *sinkid,
+ 	   HashTable *id_to_name TSRMLS_DC)
+ {
+ 	php_dispatchex *disp = disp_constructor(val TSRMLS_CC);
+@@ -625,7 +625,7 @@ PHPAPI IDispatch *php_com_wrapper_export
+ 	return (IDispatch*)disp;
+ }
+ 
+-PHPAPI IDispatch *php_com_wrapper_export(zval *val TSRMLS_DC)
++PHP_COM_DOTNET_API IDispatch *php_com_wrapper_export(zval *val TSRMLS_DC)
+ {
+ 	php_dispatchex *disp = NULL;
+ 
+diff -up php-5.2.17/ext/com_dotnet/php_com_dotnet.h.bug-62146 php-5.2.17/ext/com_dotnet/php_com_dotnet.h
+--- php-5.2.17/src/ext/com_dotnet/php_com_dotnet.h.bug-62146	2012-07-23 21:54:31.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/php_com_dotnet.h	2012-07-23 21:54:52.000000000 -0400
+@@ -34,6 +34,14 @@ extern zend_module_entry com_dotnet_modu
+ #include "TSRM.h"
+ #endif
+ 
++#ifdef PHP_WIN32
++# define PHP_COM_DOTNET_API __declspec(dllexport)
++#elif defined(__GNUC__) && __GNUC__ >= 4
++# define PHP_COM_DOTNET_API __attribute__ ((visibility("default")))
++#else
++# define PHP_COM_DOTNET_API
++#endif
++
+ PHP_MINIT_FUNCTION(com_dotnet);
+ PHP_MSHUTDOWN_FUNCTION(com_dotnet);
+ PHP_RINIT_FUNCTION(com_dotnet);
+diff -up php-5.2.17/ext/com_dotnet/php_com_dotnet_internal.h.bug-62146 php-5.2.17/ext/com_dotnet/php_com_dotnet_internal.h
+--- php-5.2.17/src/ext/com_dotnet/php_com_dotnet_internal.h.bug-62146	2012-07-23 21:55:05.000000000 -0400
++++ php-5.2.17/src/ext/com_dotnet/php_com_dotnet_internal.h	2012-07-23 21:57:13.000000000 -0400
+@@ -87,9 +87,9 @@ zend_object_iterator *php_com_saproxy_it
+ int php_com_saproxy_create(zval *com_object, zval *proxy_out, zval *index TSRMLS_DC);
+ 
+ /* com_olechar.c */
+-PHPAPI char *php_com_olestring_to_string(OLECHAR *olestring,
++PHP_COM_DOTNET_API char *php_com_olestring_to_string(OLECHAR *olestring,
+ 		uint *string_len, int codepage TSRMLS_DC);
+-PHPAPI OLECHAR *php_com_string_to_olestring(char *string,
++PHP_COM_DOTNET_API OLECHAR *php_com_string_to_olestring(char *string,
+ 		uint string_len, int codepage TSRMLS_DC);
+ 
+ 
+@@ -115,8 +115,8 @@ int php_com_do_invoke_byref(php_com_dotn
+ 
+ /* com_wrapper.c */
+ int php_com_wrapper_minit(INIT_FUNC_ARGS);
+-PHPAPI IDispatch *php_com_wrapper_export_as_sink(zval *val, GUID *sinkid, HashTable *id_to_name TSRMLS_DC);
+-PHPAPI IDispatch *php_com_wrapper_export(zval *val TSRMLS_DC);
++PHP_COM_DOTNET_API IDispatch *php_com_wrapper_export_as_sink(zval *val, GUID *sinkid, HashTable *id_to_name TSRMLS_DC);
++PHP_COM_DOTNET_API IDispatch *php_com_wrapper_export(zval *val TSRMLS_DC);
+ 
+ /* com_persist.c */
+ int php_com_persist_minit(INIT_FUNC_ARGS);
+@@ -150,10 +150,10 @@ PHP_FUNCTION(variant_get_type);
+ PHP_FUNCTION(variant_set_type);
+ PHP_FUNCTION(variant_cast);
+ 
+-PHPAPI void php_com_variant_from_zval_with_type(VARIANT *v, zval *z, VARTYPE type, int codepage TSRMLS_DC);
+-PHPAPI void php_com_variant_from_zval(VARIANT *v, zval *z, int codepage TSRMLS_DC);
+-PHPAPI int php_com_zval_from_variant(zval *z, VARIANT *v, int codepage TSRMLS_DC);
+-PHPAPI int php_com_copy_variant(VARIANT *dst, VARIANT *src TSRMLS_DC);
++PHP_COM_DOTNET_API void php_com_variant_from_zval_with_type(VARIANT *v, zval *z, VARTYPE type, int codepage TSRMLS_DC);
++PHP_COM_DOTNET_API void php_com_variant_from_zval(VARIANT *v, zval *z, int codepage TSRMLS_DC);
++PHP_COM_DOTNET_API int php_com_zval_from_variant(zval *z, VARIANT *v, int codepage TSRMLS_DC);
++PHP_COM_DOTNET_API int php_com_copy_variant(VARIANT *dst, VARIANT *src TSRMLS_DC);
+ 
+ /* com_dotnet.c */
+ PHP_FUNCTION(com_dotnet_create_instance);
+@@ -162,17 +162,17 @@ void php_com_dotnet_mshutdown(TSRMLS_D);
+ 
+ /* com_misc.c */
+ void php_com_throw_exception(HRESULT code, char *message TSRMLS_DC);
+-PHPAPI void php_com_wrap_dispatch(zval *z, IDispatch *disp,
++PHP_COM_DOTNET_API void php_com_wrap_dispatch(zval *z, IDispatch *disp,
+ 		int codepage TSRMLS_DC);
+-PHPAPI void php_com_wrap_variant(zval *z, VARIANT *v,
++PHP_COM_DOTNET_API void php_com_wrap_variant(zval *z, VARIANT *v,
+ 		int codepage TSRMLS_DC);
+-PHPAPI int php_com_safearray_get_elem(VARIANT *array, VARIANT *dest, LONG dim1 TSRMLS_DC);
++PHP_COM_DOTNET_API int php_com_safearray_get_elem(VARIANT *array, VARIANT *dest, LONG dim1 TSRMLS_DC);
+ 
+ /* com_typeinfo.c */
+-PHPAPI ITypeLib *php_com_load_typelib_via_cache(char *search_string,
++PHP_COM_DOTNET_API ITypeLib *php_com_load_typelib_via_cache(char *search_string,
+ 		int codepage, int *cached TSRMLS_DC);
+-PHPAPI ITypeLib *php_com_load_typelib(char *search_string, int codepage TSRMLS_DC);
+-PHPAPI int php_com_import_typelib(ITypeLib *TL, int mode,
++PHP_COM_DOTNET_API ITypeLib *php_com_load_typelib(char *search_string, int codepage TSRMLS_DC);
++PHP_COM_DOTNET_API int php_com_import_typelib(ITypeLib *TL, int mode,
+ 		int codepage TSRMLS_DC);
+ void php_com_typelibrary_dtor(void *pDest);
+ ITypeInfo *php_com_locate_typeinfo(char *typelibname, php_com_dotnet_object *obj, char *dispname, int sink TSRMLS_DC);

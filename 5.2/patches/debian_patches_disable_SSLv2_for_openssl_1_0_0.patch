@@ -1,0 +1,54 @@
+Index: php52-5.2.17.1/src/ext/openssl/xp_ssl.c
+===================================================================
+--- php52-5.2.17.1.orig/src/ext/openssl/xp_ssl.c	2016-11-15 03:50:01.728206406 +0300
++++ php52-5.2.17.1/src/ext/openssl/xp_ssl.c	2016-11-15 03:50:01.724206411 +0300
+@@ -332,10 +332,12 @@
+ 			sslsock->is_client = 1;
+ 			method = SSLv23_client_method();
+ 			break;
++#ifndef OPENSSL_NO_SSL2
+ 		case STREAM_CRYPTO_METHOD_SSLv2_CLIENT:
+ 			sslsock->is_client = 1;
+ 			method = SSLv2_client_method();
+ 			break;
++#endif
+ 		case STREAM_CRYPTO_METHOD_SSLv3_CLIENT:
+ 			sslsock->is_client = 1;
+ 			method = SSLv3_client_method();
+@@ -352,10 +354,12 @@
+ 			sslsock->is_client = 0;
+ 			method = SSLv3_server_method();
+ 			break;
++#ifndef OPENSSL_NO_SSL2
+ 		case STREAM_CRYPTO_METHOD_SSLv2_SERVER:
+ 			sslsock->is_client = 0;
+ 			method = SSLv2_server_method();
+ 			break;
++#endif
+ 		case STREAM_CRYPTO_METHOD_TLS_SERVER:
+ 			sslsock->is_client = 0;
+ 			method = TLSv1_server_method();
+@@ -579,9 +583,11 @@
+ 				case STREAM_CRYPTO_METHOD_SSLv23_CLIENT:
+ 					sock->method = STREAM_CRYPTO_METHOD_SSLv23_SERVER;
+ 					break;
++#ifndef OPENSSL_NO_SSL2
+ 				case STREAM_CRYPTO_METHOD_SSLv2_CLIENT:
+ 					sock->method = STREAM_CRYPTO_METHOD_SSLv2_SERVER;
+ 					break;
++#endif
+ 				case STREAM_CRYPTO_METHOD_SSLv3_CLIENT:
+ 					sock->method = STREAM_CRYPTO_METHOD_SSLv3_SERVER;
+ 					break;
+@@ -813,9 +819,11 @@
+ 	if (strncmp(proto, "ssl", protolen) == 0) {
+ 		sslsock->enable_on_connect = 1;
+ 		sslsock->method = STREAM_CRYPTO_METHOD_SSLv23_CLIENT;
++#ifndef OPENSSL_NO_SSL2
+ 	} else if (strncmp(proto, "sslv2", protolen) == 0) {
+ 		sslsock->enable_on_connect = 1;
+ 		sslsock->method = STREAM_CRYPTO_METHOD_SSLv2_CLIENT;
++#endif
+ 	} else if (strncmp(proto, "sslv3", protolen) == 0) {
+ 		sslsock->enable_on_connect = 1;
+ 		sslsock->method = STREAM_CRYPTO_METHOD_SSLv3_CLIENT;

@@ -1,0 +1,11 @@
+--- a/src/ext/mysql/config.m4
++++ b/src/ext/mysql/config.m4
+@@ -102,7 +102,7 @@
+     PHP_LIBDIR=lib
+   fi
+ 
+-  for i in $PHP_LIBDIR $PHP_LIBDIR/mysql; do
++  for i in $PHP_LIBDIR $PHP_LIBDIR/mysql $PHP_LIBDIR/$DEB_HOST_MULTIARCH; do
+     MYSQL_LIB_CHK($i)
+   done
+ 

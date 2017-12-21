@@ -1,0 +1,376 @@
+diff -up php-5.2.17/ext/date/lib/parse_date.c.bug-53502 php-5.2.17/ext/date/lib/parse_date.c
+--- php-5.2.17/src/ext/date/lib/parse_date.c.bug-53502	2011-01-07 05:04:47.000000000 +0600
++++ php-5.2.17/src/ext/date/lib/parse_date.c	2012-08-24 10:58:11.000000000 +0700
+@@ -691,7 +691,7 @@ static long timelib_lookup_zone(char **p
+ 	return value;
+ }
+ 
+-static long timelib_get_zone(char **ptr, int *dst, timelib_time *t, int *tz_not_found, const timelib_tzdb *tzdb)
++static long timelib_get_zone(char **ptr, int *dst, timelib_time *t, int *tz_not_found, const timelib_tzdb *tzdb, timelib_tz_get_wrapper tz_wrapper)
+ {
+ 	timelib_tzinfo *res;
+ 	long            retval = 0;
+@@ -737,7 +737,7 @@ static long timelib_get_zone(char **ptr,
+ #endif
+ 		/* If we have a TimeZone identifier to start with, use it */
+ 		if (strstr(tz_abbr, "/") || strcmp(tz_abbr, "UTC") == 0) {
+-			if ((res = timelib_parse_tzfile(tz_abbr, tzdb)) != NULL) {
++			if ((res = tz_wrapper(tz_abbr, tzdb)) != NULL) {
+ 				t->tz_info = res;
+ 				t->zone_type = TIMELIB_ZONETYPE_ID;
+ 				found++;
+@@ -766,7 +766,7 @@ static long timelib_get_zone(char **ptr,
+ 	}                              \
+ }
+ 
+-static int scan(Scanner *s)
++static int scan(Scanner *s, timelib_tz_get_wrapper tz_get_wrapper)
+ {
+ 	uchar *cursor = s->cur;
+ 	char *str, *ptr = NULL;
+@@ -921,8 +921,8 @@ yy3:
+ 		DEBUG_OUTPUT("tzcorrection | tz");
+ 		TIMELIB_INIT;
+ 		TIMELIB_HAVE_TZ();
+-		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
+-		if (tz_not_found) {
++		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
++if (tz_not_found) {
+ 			add_error(s, "The timezone could not be found in the database");
+ 		}
+ 		TIMELIB_DEINIT;
+@@ -5793,7 +5793,7 @@ yy333:
+ 		}
+ 
+ 		if (*ptr != '\0') {
+-			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 			if (tz_not_found) {
+ 				add_error(s, "The timezone could not be found in the database");
+ 			}
+@@ -13445,7 +13445,7 @@ yy696:
+ 		}
+ 
+ 		if (*ptr != '\0') {
+-			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 			if (tz_not_found) {
+ 				add_error(s, "The timezone could not be found in the database");
+ 			}
+@@ -15498,7 +15498,7 @@ yy888:
+ 		s->time->h = timelib_get_nr((char **) &ptr, 2);
+ 		s->time->i = timelib_get_nr((char **) &ptr, 2);
+ 		s->time->s = timelib_get_nr((char **) &ptr, 2);
+-		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 		if (tz_not_found) {
+ 			add_error(s, "The timezone could not be found in the database");
+ 		}
+@@ -16860,7 +16860,7 @@ yy1028:
+ 		if (*ptr == '.') {
+ 			s->time->f = timelib_get_frac_nr((char **) &ptr, 9);
+ 			if (*ptr) { /* timezone is optional */
+-				s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++				s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 				if (tz_not_found) {
+ 					add_error(s, "The timezone could not be found in the database");
+ 				}
+@@ -19183,7 +19183,7 @@ yy1258:
+ 		s->time->s = timelib_get_nr((char **) &ptr, 2);
+ 
+ 		if (*ptr != '\0') {
+-			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 			if (tz_not_found) {
+ 				add_error(s, "The timezone could not be found in the database");
+ 			}
+@@ -23149,7 +23149,7 @@ yy1431:
+ 
+ #define YYMAXFILL 30
+ 
+-timelib_time* timelib_strtotime(char *s, int len, struct timelib_error_container **errors, const timelib_tzdb *tzdb)
++timelib_time* timelib_strtotime(char *s, int len, struct timelib_error_container **errors, const timelib_tzdb *tzdb, timelib_tz_get_wrapper tz_get_wrapper)
+ {
+ 	Scanner in;
+ 	int t;
+@@ -23204,7 +23204,7 @@ timelib_time* timelib_strtotime(char *s,
+ 	in.time->zone_type = 0;
+ 
+ 	do {
+-		t = scan(&in);
++		t = scan(&in, tz_get_wrapper);
+ #ifdef DEBUG_PARSER
+ 		printf("%d\n", t);
+ #endif
+diff -up php-5.2.17/ext/date/lib/parse_date.re.bug-53502 php-5.2.17/ext/date/lib/parse_date.re
+--- php-5.2.17/src/ext/date/lib/parse_date.re.bug-53502	2010-07-14 07:04:43.000000000 +0700
++++ php-5.2.17/src/ext/date/lib/parse_date.re	2012-08-24 10:58:11.000000000 +0700
+@@ -690,7 +690,7 @@ static long timelib_lookup_zone(char **p
+ 	return value;
+ }
+ 
+-static long timelib_get_zone(char **ptr, int *dst, timelib_time *t, int *tz_not_found, const timelib_tzdb *tzdb)
++static long timelib_get_zone(char **ptr, int *dst, timelib_time *t, int *tz_not_found, const timelib_tzdb *tzdb, timelib_tz_get_wrapper tz_wrapper)
+ {
+ 	timelib_tzinfo *res;
+ 	long            retval = 0;
+@@ -736,7 +736,7 @@ static long timelib_get_zone(char **ptr,
+ #endif
+ 		/* If we have a TimeZone identifier to start with, use it */
+ 		if (strstr(tz_abbr, "/") || strcmp(tz_abbr, "UTC") == 0) {
+-			if ((res = timelib_parse_tzfile(tz_abbr, tzdb)) != NULL) {
++			if ((res = tz_wrapper(tz_abbr, tzdb)) != NULL) {
+ 				t->tz_info = res;
+ 				t->zone_type = TIMELIB_ZONETYPE_ID;
+ 				found++;
+@@ -765,7 +765,7 @@ static long timelib_get_zone(char **ptr,
+ 	}                              \
+ }
+ 
+-static int scan(Scanner *s)
++static int scan(Scanner *s, timelib_tz_get_wrapper tz_get_wrapper)
+ {
+ 	uchar *cursor = s->cur;
+ 	char *str, *ptr = NULL;
+@@ -1006,7 +1006,7 @@ relativetext = reltextnumber space relte
+ 		}
+ 
+ 		if (*ptr != '\0') {
+-			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 			if (tz_not_found) {
+ 				add_error(s, "The timezone could not be found in the database");
+ 			}
+@@ -1047,7 +1047,7 @@ relativetext = reltextnumber space relte
+ 				s->time->h = timelib_get_nr((char **) &ptr, 2);
+ 				s->time->i = timelib_get_nr((char **) &ptr, 2);
+ 				s->time->s = 0;
+-				s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, s->tzdb);
++				s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, s->tzdb, tz_get_wrapper);
+ 				break;
+ 			case 1:
+ 				s->time->y = timelib_get_nr((char **) &ptr, 4);
+@@ -1072,7 +1072,7 @@ relativetext = reltextnumber space relte
+ 		s->time->s = timelib_get_nr((char **) &ptr, 2);
+ 
+ 		if (*ptr != '\0') {
+-			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 			if (tz_not_found) {
+ 				add_error(s, "The timezone could not be found in the database");
+ 			}
+@@ -1265,7 +1265,7 @@ relativetext = reltextnumber space relte
+ 		if (*ptr == '.') {
+ 			s->time->f = timelib_get_frac_nr((char **) &ptr, 9);
+ 			if (*ptr) { /* timezone is optional */
+-				s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++				s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 				if (tz_not_found) {
+ 					add_error(s, "The timezone could not be found in the database");
+ 				}
+@@ -1365,7 +1365,7 @@ relativetext = reltextnumber space relte
+ 		s->time->h = timelib_get_nr((char **) &ptr, 2);
+ 		s->time->i = timelib_get_nr((char **) &ptr, 2);
+ 		s->time->s = timelib_get_nr((char **) &ptr, 2);
+-		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 		if (tz_not_found) {
+ 			add_error(s, "The timezone could not be found in the database");
+ 		}
+@@ -1451,7 +1451,7 @@ relativetext = reltextnumber space relte
+ 		DEBUG_OUTPUT("tzcorrection | tz");
+ 		TIMELIB_INIT;
+ 		TIMELIB_HAVE_TZ();
+-		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++		s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 		if (tz_not_found) {
+ 			add_error(s, "The timezone could not be found in the database");
+ 		}
+@@ -1504,7 +1504,7 @@ relativetext = reltextnumber space relte
+ 		}
+ 
+ 		if (*ptr != '\0') {
+-			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb);
++			s->time->z = timelib_get_zone((char **) &ptr, &s->time->dst, s->time, &tz_not_found, s->tzdb, tz_get_wrapper);
+ 			if (tz_not_found) {
+ 				add_error(s, "The timezone could not be found in the database");
+ 			}
+@@ -1550,7 +1550,7 @@ relativetext = reltextnumber space relte
+ 
+ /*!max:re2c */
+ 
+-timelib_time* timelib_strtotime(char *s, int len, struct timelib_error_container **errors, const timelib_tzdb *tzdb)
++timelib_time* timelib_strtotime(char *s, int len, struct timelib_error_container **errors, const timelib_tzdb *tzdb, timelib_tz_get_wrapper tz_get_wrapper)
+ {
+ 	Scanner in;
+ 	int t;
+@@ -1605,7 +1605,7 @@ timelib_time* timelib_strtotime(char *s,
+ 	in.time->zone_type = 0;
+ 
+ 	do {
+-		t = scan(&in);
++		t = scan(&in, tz_get_wrapper);
+ #ifdef DEBUG_PARSER
+ 		printf("%d\n", t);
+ #endif
+diff -up php-5.2.17/ext/date/lib/timelib.h.bug-53502 php-5.2.17/ext/date/lib/timelib.h
+--- php-5.2.17/src/ext/date/lib/timelib.h.bug-53502	2010-01-03 15:23:27.000000000 +0600
++++ php-5.2.17/src/ext/date/lib/timelib.h	2012-08-24 10:58:11.000000000 +0700
+@@ -26,10 +26,14 @@
+ #include <limits.h>
+ #endif
+ 
++#define TIMELIB_VERSION 201102
++
+ #define TIMELIB_NONE             0x00
+ #define TIMELIB_OVERRIDE_TIME    0x01
+ #define TIMELIB_NO_CLONE         0x02
+ 
++#define TIMELIB_UNSET   -99999
++
+ #define TIMELIB_SPECIAL_WEEKDAY  0x01
+ 
+ #ifndef LONG_MAX
+@@ -48,6 +52,9 @@
+ #define strncasecmp strnicmp
+ #endif
+ 
++/* Function pointers */
++typedef timelib_tzinfo* (*timelib_tz_get_wrapper)(char *tzname, const timelib_tzdb *tzdb);
++
+ /* From dow.c */
+ timelib_sll timelib_day_of_week(timelib_sll y, timelib_sll m, timelib_sll d);
+ timelib_sll timelib_iso_day_of_week(timelib_sll y, timelib_sll m, timelib_sll d);
+@@ -57,13 +64,15 @@ timelib_sll timelib_days_in_month(timeli
+ void timelib_isoweek_from_date(timelib_sll y, timelib_sll m, timelib_sll d, timelib_sll *iw, timelib_sll *iy);
+ 
+ /* From parse_date.re */
+-timelib_time *timelib_strtotime(char *s, int len, timelib_error_container **errors, const timelib_tzdb *tzdb);
++timelib_time *timelib_strtotime(char *s, int len, timelib_error_container **errors, const timelib_tzdb *tzdb, timelib_tz_get_wrapper tz_get_wrapper);
++timelib_time *timelib_parse_from_format(char *format, char *s, int len, timelib_error_container **errors, const timelib_tzdb *tzdb, timelib_tz_get_wrapper tz_get_wrapper);
+ void timelib_fill_holes(timelib_time *parsed, timelib_time *now, int options);
+ char *timelib_timezone_id_from_abbr(const char *abbr, long gmtoffset, int isdst);
+ const timelib_tz_lookup_table *timelib_timezone_abbreviations_list(void);
+ 
+ /* From tm2unixtime.c */
+ void timelib_update_ts(timelib_time* time, timelib_tzinfo* tzi);
++void timelib_do_normalize(timelib_time *base);
+ 
+ /* From unixtime2tm.c */
+ int timelib_apply_localtime(timelib_time *t, unsigned int localtime);
+diff -up php-5.2.17/ext/date/lib/tm2unixtime.c.bug-53502 php-5.2.17/ext/date/lib/tm2unixtime.c
+--- php-5.2.17/src/ext/date/lib/tm2unixtime.c.bug-53502	2010-01-03 15:23:27.000000000 +0600
++++ php-5.2.17/src/ext/date/lib/tm2unixtime.c	2012-08-24 10:58:11.000000000 +0700
+@@ -99,11 +99,11 @@ static void do_adjust_for_weekday(timeli
+ 	time->have_weekday_relative = 0;
+ }
+ 
+-static void do_normalize(timelib_time* time)
++void timelib_do_normalize(timelib_time* time)
+ {
+-	do {} while (do_range_limit(0, 60, 60, &time->s, &time->i));
+-	do {} while (do_range_limit(0, 60, 60, &time->i, &time->h));
+-	do {} while (do_range_limit(0, 24, 24, &time->h, &time->d));
++	if (time->s != TIMELIB_UNSET) do {} while (do_range_limit(0, 60, 60, &time->s, &time->i));
++	if (time->s != TIMELIB_UNSET) do {} while (do_range_limit(0, 60, 60, &time->i, &time->h));
++	if (time->s != TIMELIB_UNSET) do {} while (do_range_limit(0, 24, 24, &time->h, &time->d));
+ 	do {} while (do_range_limit(1, 13, 12, &time->m, &time->y));
+ 
+ 	do {} while (do_range_limit_days(&time->y, &time->m, &time->d));
+@@ -115,7 +115,7 @@ static void do_adjust_relative(timelib_t
+ 	if (time->have_weekday_relative) {
+ 		do_adjust_for_weekday(time);
+ 	}
+-	do_normalize(time);
++	timelib_do_normalize(time);
+ 
+ 	if (time->have_relative) {
+ 		time->s += time->relative.s;
+@@ -126,7 +126,7 @@ static void do_adjust_relative(timelib_t
+ 		time->m += time->relative.m;
+ 		time->y += time->relative.y;
+ 	}
+-	do_normalize(time);
++	timelib_do_normalize(time);
+ 
+ 	memset(&(time->relative), 0, sizeof(time->relative));
+ 	time->have_relative = 0;
+@@ -194,7 +194,7 @@ static void do_adjust_special(timelib_ti
+ 				break;
+ 		}
+ 	}
+-	do_normalize(time);
++	timelib_do_normalize(time);
+ 	memset(&(time->special), 0, sizeof(time->special));
+ 	time->have_relative = 0;
+ }
+diff -up php-5.2.17/ext/date/php_date.c.bug-53502 php-5.2.17/ext/date/php_date.c
+--- php-5.2.17/src/ext/date/php_date.c.bug-53502	2012-08-24 10:58:11.000000000 +0700
++++ php-5.2.17/src/ext/date/php_date.c	2012-08-24 10:58:36.000000000 +0700
+@@ -576,6 +576,12 @@ static timelib_tzinfo *php_date_parse_tz
+ 	}
+ 	return tzi;
+ }
++
++timelib_tzinfo *php_date_parse_tzfile_wrapper(char *formal_tzname, const timelib_tzdb *tzdb)
++{
++	TSRMLS_FETCH();
++	return php_date_parse_tzfile(formal_tzname, tzdb TSRMLS_CC);
++}
+ /* }}} */
+ 
+ /* {{{ Helper functions */
+@@ -1108,7 +1114,7 @@ PHPAPI signed long php_parse_date(char *
+ 	int           error2;
+ 	signed long   retval;
+ 
+-	parsed_time = timelib_strtotime(string, strlen(string), NULL, DATE_TIMEZONEDB);
++	parsed_time = timelib_strtotime(string, strlen(string), NULL, DATE_TIMEZONEDB, php_date_parse_tzfile_wrapper);
+ 	timelib_update_ts(parsed_time, NULL);
+ 	retval = timelib_date_to_int(parsed_time, &error2);
+ 	timelib_time_dtor(parsed_time);
+@@ -1140,7 +1146,7 @@ PHP_FUNCTION(strtotime)
+ 
+ 		initial_ts = emalloc(25);
+ 		snprintf(initial_ts, 24, "@%ld UTC", preset_ts);
+-		t = timelib_strtotime(initial_ts, strlen(initial_ts), NULL, DATE_TIMEZONEDB); /* we ignore the error here, as this should never fail */
++		t = timelib_strtotime(initial_ts, strlen(initial_ts), NULL, DATE_TIMEZONEDB, php_date_parse_tzfile_wrapper); /* we ignore the error here, as this should never fail */
+ 		timelib_update_ts(t, tzi);
+ 		now->tz_info = tzi;
+ 		now->zone_type = TIMELIB_ZONETYPE_ID;
+@@ -1162,7 +1168,7 @@ PHP_FUNCTION(strtotime)
+ 		RETURN_FALSE;
+ 	}
+ 	
+-	t = timelib_strtotime(times, time_len, &error, DATE_TIMEZONEDB);
++	t = timelib_strtotime(times, time_len, &error, DATE_TIMEZONEDB, php_date_parse_tzfile_wrapper);
+ 	error1 = error->error_count;
+ 	timelib_error_container_dtor(error);
+ 	timelib_fill_holes(t, now, TIMELIB_NO_CLONE);
+@@ -1703,7 +1709,7 @@ static int date_initialize(php_date_obj 
+ 	if (dateobj->time) {
+ 		timelib_time_dtor(dateobj->time);
+ 	}
+-	dateobj->time = timelib_strtotime(time_str_len ? time_str : "now", time_str_len ? time_str_len : sizeof("now") -1, &err, DATE_TIMEZONEDB);
++	dateobj->time = timelib_strtotime(time_str_len ? time_str : "now", time_str_len ? time_str_len : sizeof("now") -1, &err, DATE_TIMEZONEDB,php_date_parse_tzfile_wrapper);
+ 
+ 	if (err && err->error_count) {
+ 		if (ctor) {
+@@ -1821,7 +1827,7 @@ PHP_FUNCTION(date_parse)
+ 		RETURN_FALSE;
+ 	}
+ 
+-	parsed_time = timelib_strtotime(date, date_len, &error, DATE_TIMEZONEDB);
++	parsed_time = timelib_strtotime(date, date_len, &error, DATE_TIMEZONEDB, php_date_parse_tzfile_wrapper);
+ 	array_init(return_value);
+ #define PHP_DATE_PARSE_DATE_SET_TIME_ELEMENT(name, elem) \
+ 	if (parsed_time->elem == -99999) {               \
+@@ -1942,7 +1948,7 @@ PHP_FUNCTION(date_modify)
+ 	dateobj = (php_date_obj *) zend_object_store_get_object(object TSRMLS_CC);
+ 	DATE_CHECK_INITIALIZED(dateobj->time, DateTime);
+ 
+-	tmp_time = timelib_strtotime(modify, modify_len, &err, DATE_TIMEZONEDB);
++	tmp_time = timelib_strtotime(modify, modify_len, &err, DATE_TIMEZONEDB, php_date_parse_tzfile_wrapper);
+ 
+ 	if (err && err->error_count) {
+ 		/* spit out the first library error message, at least */

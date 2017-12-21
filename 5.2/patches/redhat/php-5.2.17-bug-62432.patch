@@ -1,0 +1,210 @@
+diff -up php-5.2.17/ext/date/php_date.c.bug-62432 php-5.2.17/ext/date/php_date.c
+--- php-5.2.17/src/ext/date/php_date.c.bug-62432	2012-07-22 22:23:04.000000000 -0400
++++ php-5.2.17/src/ext/date/php_date.c	2012-07-22 22:23:42.000000000 -0400
+@@ -1547,7 +1547,7 @@ static inline zend_object_value date_obj
+ 	}
+ 	
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	
+ 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) date_object_free_storage_date, NULL TSRMLS_CC);
+ 	retval.handlers = &date_object_handlers_date;
+@@ -1615,7 +1615,7 @@ static inline zend_object_value date_obj
+ 	}
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	
+ 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) date_object_free_storage_timezone, NULL TSRMLS_CC);
+ 	retval.handlers = &date_object_handlers_timezone;
+diff -up php-5.2.17/ext/dom/php_dom.c.bug-62432 php-5.2.17/ext/dom/php_dom.c
+--- php-5.2.17/src/ext/dom/php_dom.c.bug-62432	2012-07-22 22:43:56.000000000 -0400
++++ php-5.2.17/src/ext/dom/php_dom.c	2012-07-22 22:44:17.000000000 -0400
+@@ -1040,7 +1040,7 @@ static dom_object* dom_objects_set_class
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+ 	if (hash_copy) {
+-		zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++		zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	}
+ 
+ 	return intern;
+diff -up php-5.2.17/ext/pdo/pdo_dbh.c.bug-62432 php-5.2.17/ext/pdo/pdo_dbh.c
+--- php-5.2.17/src/ext/pdo/pdo_dbh.c.bug-62432	2012-07-22 22:25:03.000000000 -0400
++++ php-5.2.17/src/ext/pdo/pdo_dbh.c	2012-07-22 22:25:25.000000000 -0400
+@@ -1516,7 +1516,7 @@ zend_object_value pdo_dbh_new(zend_class
+ 	dbh->refcount = 1;
+ 	ALLOC_HASHTABLE(dbh->properties);
+ 	zend_hash_init(dbh->properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+-	zend_hash_copy(dbh->properties, &ce->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(dbh->properties, &ce->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	dbh->def_stmt_ce = pdo_dbstmt_ce;
+ 	
+ 	retval.handle = zend_objects_store_put(dbh, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t)pdo_dbh_free_storage, NULL TSRMLS_CC);
+diff -up php-5.2.17/ext/pdo/pdo_stmt.c.bug-62432 php-5.2.17/ext/pdo/pdo_stmt.c
+--- php-5.2.17/src/ext/pdo/pdo_stmt.c.bug-62432	2012-07-22 22:25:46.000000000 -0400
++++ php-5.2.17/src/ext/pdo/pdo_stmt.c	2012-07-22 22:26:07.000000000 -0400
+@@ -2468,7 +2468,7 @@ zend_object_value pdo_dbstmt_new(zend_cl
+ 	stmt->refcount = 1;
+ 	ALLOC_HASHTABLE(stmt->properties);
+ 	zend_hash_init(stmt->properties, 0, NULL, ZVAL_PTR_DTOR, 0);
+-	zend_hash_copy(stmt->properties, &ce->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(stmt->properties, &ce->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	retval.handle = zend_objects_store_put(stmt, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t)pdo_dbstmt_free_storage, (zend_objects_store_clone_t)dbstmt_clone_obj TSRMLS_CC);
+ 	retval.handlers = &pdo_dbstmt_object_handlers;
+diff -up php-5.2.17/ext/reflection/php_reflection.c.bug-62432 php-5.2.17/ext/reflection/php_reflection.c
+--- php-5.2.17/src/ext/reflection/php_reflection.c.bug-62432	2012-07-22 22:26:34.000000000 -0400
++++ php-5.2.17/src/ext/reflection/php_reflection.c	2012-07-22 22:26:52.000000000 -0400
+@@ -265,7 +265,7 @@ static zend_object_value reflection_obje
+ 	intern->free_ptr = 0;
+ 
+ 	zend_object_std_init(&intern->zo, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	retval.handle = zend_objects_store_put(intern, NULL, reflection_free_objects_storage, reflection_objects_clone TSRMLS_CC);
+ 	retval.handlers = &reflection_object_handlers;
+ 	return retval;
+diff -up php-5.2.17/ext/soap/soap.c.bug-62432 php-5.2.17/ext/soap/soap.c
+--- php-5.2.17/src/ext/soap/soap.c.bug-62432	2012-07-22 22:27:24.000000000 -0400
++++ php-5.2.17/src/ext/soap/soap.c	2012-07-22 22:27:39.000000000 -0400
+@@ -1090,7 +1090,7 @@ PHP_METHOD(SoapServer, SoapServer)
+ 
+ 			ALLOC_HASHTABLE(service->class_map);
+ 			zend_hash_init(service->class_map, zend_hash_num_elements((*tmp)->value.ht), NULL, ZVAL_PTR_DTOR, 0);
+-			zend_hash_copy(service->class_map, (*tmp)->value.ht, (copy_ctor_func_t) zval_add_ref, (void *) &ztmp, sizeof(zval *));
++			zend_hash_copy(service->class_map, (*tmp)->value.ht, (copy_ctor_func_t) zval_property_ctor, (void *) &ztmp, sizeof(zval *));
+ 		}
+ 
+ 		if (zend_hash_find(ht, "typemap", sizeof("typemap"), (void**)&tmp) == SUCCESS &&
+diff -up php-5.2.17/ext/spl/spl_array.c.bug-62432 php-5.2.17/ext/spl/spl_array.c
+--- php-5.2.17/src/ext/spl/spl_array.c.bug-62432	2012-07-22 22:28:06.000000000 -0400
++++ php-5.2.17/src/ext/spl/spl_array.c	2012-07-22 22:28:23.000000000 -0400
+@@ -136,7 +136,7 @@ static zend_object_value spl_array_objec
+ 	ALLOC_INIT_ZVAL(intern->retval);
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	intern->ar_flags = 0;
+ 	intern->ce_get_iterator = spl_ce_ArrayIterator;
+diff -up php-5.2.17/ext/spl/spl_directory.c.bug-62432 php-5.2.17/ext/spl/spl_directory.c
+--- php-5.2.17/src/ext/spl/spl_directory.c.bug-62432	2012-07-22 22:35:47.000000000 -0400
++++ php-5.2.17/src/ext/spl/spl_directory.c	2012-07-22 22:36:03.000000000 -0400
+@@ -138,7 +138,7 @@ static zend_object_value spl_filesystem_
+ 	if (obj) *obj = intern;
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t) zend_objects_destroy_object, (zend_objects_free_object_storage_t) spl_filesystem_object_free_storage, NULL TSRMLS_CC);
+ 	retval.handlers = &spl_filesystem_object_handlers;
+diff -up php-5.2.17/ext/spl/spl_iterators.c.bug-62432 php-5.2.17/ext/spl/spl_iterators.c
+--- php-5.2.17/src/ext/spl/spl_iterators.c.bug-62432	2012-07-22 22:37:04.000000000 -0400
++++ php-5.2.17/src/ext/spl/spl_iterators.c	2012-07-22 22:38:52.000000000 -0400
+@@ -747,7 +747,7 @@ static zend_object_value spl_RecursiveIt
+ 	memset(intern, 0, sizeof(spl_recursive_it_object));
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) spl_RecursiveIteratorIterator_free_storage, NULL TSRMLS_CC);
+ 	retval.handlers = &spl_handlers_rec_it_it;
+@@ -1618,7 +1618,7 @@ static zend_object_value spl_dual_it_new
+ 	intern->dit_type = DIT_Unknown;
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) spl_dual_it_free_storage, NULL TSRMLS_CC);
+ 	retval.handlers = &spl_handlers_dual_it;
+diff -up php-5.2.17/ext/spl/spl_observer.c.bug-62432 php-5.2.17/ext/spl/spl_observer.c
+--- php-5.2.17/src/ext/spl/spl_observer.c.bug-62432	2012-07-22 22:37:43.000000000 -0400
++++ php-5.2.17/src/ext/spl/spl_observer.c	2012-07-22 22:37:58.000000000 -0400
+@@ -106,7 +106,7 @@ static zend_object_value spl_object_stor
+ 	*obj = intern;
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	zend_hash_init(&intern->storage, 0, NULL, ZVAL_PTR_DTOR, 0);
+ 
+diff -up php-5.2.17/ext/sqlite/sqlite.c.bug-62432 php-5.2.17/ext/sqlite/sqlite.c
+--- php-5.2.17/src/ext/sqlite/sqlite.c.bug-62432	2012-07-22 22:39:28.000000000 -0400
++++ php-5.2.17/src/ext/sqlite/sqlite.c	2012-07-22 22:39:49.000000000 -0400
+@@ -836,7 +836,7 @@ static void sqlite_object_new(zend_class
+ 	memset(intern, 0, sizeof(sqlite_object));
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	retval->handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) sqlite_object_free_storage, NULL TSRMLS_CC);
+ 	retval->handlers = handlers;
+diff -up php-5.2.17/ext/tidy/tidy.c.bug-62432 php-5.2.17/ext/tidy/tidy.c
+--- php-5.2.17/src/ext/tidy/tidy.c.bug-62432	2012-07-22 22:40:15.000000000 -0400
++++ php-5.2.17/src/ext/tidy/tidy.c	2012-07-22 22:40:38.000000000 -0400
+@@ -583,7 +583,7 @@ static void tidy_object_new(zend_class_e
+ 	memset(intern, 0, sizeof(PHPTidyObj));
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+ 	
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 
+ 	switch(objtype) {
+ 		case is_node:
+diff -up php-5.2.17/ext/xmlreader/php_xmlreader.c.bug-62432 php-5.2.17/ext/xmlreader/php_xmlreader.c
+--- php-5.2.17/src/ext/xmlreader/php_xmlreader.c.bug-62432	2012-07-22 22:41:00.000000000 -0400
++++ php-5.2.17/src/ext/xmlreader/php_xmlreader.c	2012-07-22 22:41:25.000000000 -0400
+@@ -410,7 +410,7 @@ zend_object_value xmlreader_objects_new(
+ 	intern->prop_handler = &xmlreader_prop_handlers;
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) xmlreader_objects_free_storage, xmlreader_objects_clone TSRMLS_CC);
+ 	intern->handle = retval.handle;
+ 	retval.handlers = EG(ze1_compatibility_mode) ? &xmlreader_object_handlers_ze1 : &xmlreader_object_handlers;
+diff -up php-5.2.17/ext/xmlwriter/php_xmlwriter.c.bug-62432 php-5.2.17/ext/xmlwriter/php_xmlwriter.c
+--- php-5.2.17/src/ext/xmlwriter/php_xmlwriter.c.bug-62432	2012-07-22 22:41:39.000000000 -0400
++++ php-5.2.17/src/ext/xmlwriter/php_xmlwriter.c	2012-07-22 22:42:03.000000000 -0400
+@@ -151,7 +151,7 @@ static zend_object_value xmlwriter_objec
+ 	intern->xmlwriter_ptr = NULL;
+ 	
+ 	zend_object_std_init(&intern->zo, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref,
++	zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor,
+ 					(void *) &tmp, sizeof(zval *));
+ 
+ 	retval.handle = zend_objects_store_put(intern,
+diff -up php-5.2.17/ext/xsl/php_xsl.c.bug-62432 php-5.2.17/ext/xsl/php_xsl.c
+--- php-5.2.17/src/ext/xsl/php_xsl.c.bug-62432	2012-07-22 22:42:24.000000000 -0400
++++ php-5.2.17/src/ext/xsl/php_xsl.c	2012-07-22 22:42:38.000000000 -0400
+@@ -125,7 +125,7 @@ zend_object_value xsl_objects_new(zend_c
+ 	intern->doc = NULL;
+ 
+ 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
++	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, (void *) &tmp, sizeof(zval *));
+ 	ALLOC_HASHTABLE(intern->parameter);
+ 	zend_hash_init(intern->parameter, 0, NULL, ZVAL_PTR_DTOR, 0);
+ 	ALLOC_HASHTABLE(intern->registered_phpfunctions);
+diff -up php-5.2.17/ext/zip/php_zip.c.bug-62432 php-5.2.17/ext/zip/php_zip.c
+--- php-5.2.17/src/ext/zip/php_zip.c.bug-62432	2012-07-22 22:43:03.000000000 -0400
++++ php-5.2.17/src/ext/zip/php_zip.c	2012-07-22 22:43:16.000000000 -0400
+@@ -1038,7 +1038,7 @@ static zend_object_value php_zip_object_
+ 	intern->zo.ce = class_type;
+ #endif
+ 
+-	zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref,
++	zend_hash_copy(intern->zo.properties, &class_type->default_properties, (copy_ctor_func_t) zval_property_ctor, 
+ 					(void *) &tmp, sizeof(zval *));
+ 
+ 	retval.handle = zend_objects_store_put(intern,
