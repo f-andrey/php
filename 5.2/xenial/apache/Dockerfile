@@ -123,8 +123,8 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS 0B96609E270F565C13292B24C13C70B87267B52D 0A95E9A026542D53835E3F3A7DEC4E69FC9C83D7
 
 ENV PHP_VERSION 5.2.17
-ENV PHP_URL="http://museum.php.net/php5/php-5.2.17.tar.bz2"
-ENV PHP_SHA256="" PHP_MD5="b27947f3045220faf16e4d9158cbfe13"
+ENV PHP_URL="https://git.php.net/?p=web/php-distributions.git;a=blob;f=php-5.2.17.tar.bz2;h=90d654f7b9c60320f6228194ed1d2f12976a3a59;hb=bed93a30bbc2104f6e88e6ef142891a4c289502f"
+ENV PHP_SHA256="" PHP_MD5="66a3e5755df257c814c42d90546bc3de"
 
 RUN set -xe; \
 	\
@@ -174,6 +174,7 @@ RUN set -xe \
 		$PHP_EXTRA_BUILD_DEPS \
 		automake \
 		autoconf \
+		byacc \
 		libtool \
 		libcurl4-openssl-dev \
 		libedit-dev \
@@ -225,14 +226,23 @@ RUN set -xe \
 	&& ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a \
 	&& ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so \
 # This configure patches
+	&& apt-get update && apt remove -y autoconf && apt install -y autoconf2.13 \
+	&& ln -s /usr/bin/autoconf2.13 /usr/bin/autoconf \
+	&& ln -s /usr/bin/autoheader2.13 /usr/bin/autoheader \
+	&& ln -s /usr/bin/autoreconf2.13 /usr/bin/autoreconf \
+	&& ln -s /etc/autoconf2.13/acconfig.h /usr/share/autoconf2.13/acconfig.h \
 	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
+	&& curl ftp://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz -o /tmp/flex-2.5.4.tar.gz \
 	&& mkdir -p /opt/bison && cd /opt/ && tar xvf /tmp/bison-2.4.tar.bz2 \
+	&& mkdir -p /opt/flex && tar xvf /tmp/flex-2.5.4.tar.gz \
 	&& cd /opt/bison-2.4 && ./configure --prefix=/opt/bison && make install clean \
+	&& cd /opt/flex-2.5.4 && ./configure --prefix=/opt/flex && make install clean \
 	&& cd /usr/src/php && rm -Rf /opt/bison-2.4 && export YACC=/opt/bison/bin/bison \
+	&& rm -Rf /opt/flex-2.5.4 && export LEX=/opt/flex/bin/flex \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
 	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; echo $i; done \
-	&& ./buildconf --force \
-	&& patch -N -p2 -s < /tmp/patches/0000_bison-flex.patch \
+	&& ./buildconf --force
+        && patch -N -p2 -s < /tmp/patches/0000_bison-flex.patch \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
 		--with-openssl=/usr \
 		--with-openssl-dir=/usr \

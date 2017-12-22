@@ -1,6 +1,6 @@
---- a/src/configure	2017-02-17 19:12:52.685480504 +0000
-+++ b/src/configure	2017-02-17 19:13:24.525134372 +0000
-@@ -2968,7 +2968,7 @@ echo "configure:2958: checking if $AWK i
+--- configure52.orig	2017-12-22 05:09:25.041849678 +0300
++++ configure52	2017-12-22 05:57:26.924137701 +0300
+@@ -2961,7 +2961,7 @@ echo "configure:2951: checking if $AWK i
  
  
  
@@ -9,7 +9,7 @@
  do
  # Extract the first word of "$ac_prog", so it can be a program name with args.
  set dummy $ac_prog; ac_word=$2
-@@ -3018,7 +3018,7 @@ if eval "test \"`echo '$''{'php_cv_bison
+@@ -3011,7 +3011,7 @@ if eval "test \"`echo '$''{'php_cv_bison
    echo $ac_n "(cached) $ac_c" 1>&6
  else
    
@@ -18,41 +18,38 @@
        php_cv_bison_version=invalid
        if test -n "$bison_version_vars"; then
          set $bison_version_vars
-@@ -3065,7 +3065,7 @@ else
+@@ -3058,12 +3058,12 @@ else
    for ac_dir in $ac_dummy; do
      test -z "$ac_dir" && ac_dir=.
      if test -f $ac_dir/$ac_word; then
 -      ac_cv_prog_LEX="flex"
-+      ac_cv_prog_LEX="${LEX}"
++      ac_cv_prog_LEX=""${LEX}"
        break
      fi
    done
-@@ -3083,7 +3083,7 @@ fi
- if test -z "$LEXLIB"
- then
-   case "$LEX" in
--  flex*) ac_lib=fl ;;
-+  ${LEX}*) ac_lib=fl ;;
-   *) ac_lib=l ;;
-   esac
-   echo $ac_n "checking for yywrap in -l$ac_lib""... $ac_c" 1>&6
-@@ -3128,7 +3128,7 @@ fi
+   IFS="$ac_save_ifs"
+-  test -z "$ac_cv_prog_LEX" && ac_cv_prog_LEX="lex"
++  test -z "$ac_cv_prog_LEX" && ac_cv_prog_LEX="${LEX}"
+ fi
+ fi
+ LEX="$ac_cv_prog_LEX"
+@@ -3121,7 +3121,7 @@ fi
  
  fi
  
 -  if test "$LEX" = "flex"; then
-+  if test "$LEX" = "/opt/flex254/bin/flex"; then
++  if test "$LEX" = "/opt/flex/bin/flex"; then
      echo $ac_n "checking lex output file root""... $ac_c" 1>&6
- echo "configure:3134: checking lex output file root" >&5
+ echo "configure:3127: checking lex output file root" >&5
  if eval "test \"`echo '$''{'ac_cv_prog_lex_root'+set}'`\" = set"; then
-@@ -3272,14 +3272,14 @@ fi
+@@ -3265,14 +3265,14 @@ fi
      LEX_CFLAGS="-DYY_USE_CONST"
    fi
  
 -  if test "$LEX" = "flex"; then
-+  if test "$LEX" = "/opt/flex254/bin/flex"; then
++  if test "$LEX" = "/opt/flex/bin/flex"; then
      echo $ac_n "checking for flex version""... $ac_c" 1>&6
- echo "configure:3278: checking for flex version" >&5
+ echo "configure:3271: checking for flex version" >&5
  if eval "test \"`echo '$''{'php_cv_flex_version'+set}'`\" = set"; then
    echo $ac_n "(cached) $ac_c" 1>&6
  else
@@ -62,7 +59,7 @@
        php_cv_flex_version=invalid
        for flex_check_version in $flex_version_list; do
          if test "$flex_version" = "$flex_check_version"; then
-@@ -108087,7 +108087,7 @@ if eval "test \"`echo '$''{'php_cv_bison
+@@ -107368,7 +107368,7 @@ if eval "test \"`echo '$''{'php_cv_bison
    echo $ac_n "(cached) $ac_c" 1>&6
  else
    
