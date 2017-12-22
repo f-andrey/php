@@ -26,8 +26,10 @@ RUN apt-get update && apt-get install -y \
 		ca-certificates \
 		curl \
 		dirmngr \
+		libaio1 \
 		libcurl3 \
 		libedit2 \
+		libnuma1 \
 		libsqlite3-0 \
 		libssl1.0 \
 		libtidy-0.99-0 \
@@ -169,6 +171,44 @@ RUN set -xe; \
 
 COPY docker-php-source /usr/local/bin/
 
+RUN set -xe; \
+	\
+	fetchMysqlDeps=' \
+		git \
+		libaio-dev \
+		libnuma-dev \
+		wget \
+	'; \
+	apt-get update && apt-get install -y --no-install-recommends $fetchMysqlDeps; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+	groupadd -g 118 mysql \
+	&& adduser --system --gid 118 --force-badname _mysql_ \
+	&& usermod --shell /bin/bash _mysql_; \
+	\
+	cd /home/_mysql_; \
+	su -l _mysql_ -c "git clone https://github.com/datacharmer/mysql-sandbox" ; \
+	echo 'export PERL5LIB=/home/_mysql_/usr/local/share/perl/5.22.1' >> /home/_mysql_/.bashrc; \
+	export PATH=/home/_mysql_/usr/local/bin:$PATH; \
+	export PERL5LIB=/home/_mysql_/usr/local/share/perl/5.22.1; \
+	cd /home/_mysql_/mysql-sandbox; \
+	perl Makefile.PL PREFIX=/home/_mysql_/usr/local; \
+	make && make test && make install; \
+	\
+	cd /home/_mysql_/; \
+	wget https://cdn.mysql.com/Downloads/MySQL-5.6/mysql-5.6.38-linux-glibc2.12-x86_64.tar.gz \
+	&& mkdir -p /opt/mysql/5.6.38 && cd /opt/mysql/5.6.38 && whoami && env \
+	&& tar xvf /home/_mysql_/mysql-5.6.38-linux-glibc2.12-x86_64.tar.gz --strip-components=1 \
+	&& chown -R _mysql_:mysql /opt/mysql && chown -R _mysql_:mysql /home/_mysql_ \
+	&& export HOME=/home/_mysql_; \
+	sed -i 's/exec \"low_level_make_sandbox\"/exec \"\/home\/_mysql_\/usr\/local\/bin\/low_level_make_sandbox\"/' /home/_mysql_/usr/local/bin/make_sandbox \
+#	sed -i '/use strict;/a use lib \"\/home\/_mysql_\/local\/share\/perl\/5.22.1\";' /home/_mysql_/usr/local/bin/make_sandbox; \
+#	head -30 /home/_mysql_/usr/local/bin/make_sandbox \
+	&& cd /home/_mysql_ && su -l _mysql_ --preserve-environment -s /bin/bash -c "/home/_mysql_/usr/local/bin/make_sandbox 5.6.38 --export_binaries -- --init_options='--explicit_defaults_for_timestamp'"; \
+	rm -Rf /home/_mysql_/mysql-5.6.38-linux-glibc2.12-x86_64.tar.gz; \
+#	&& rm -Rf /opt/mysql/5.6.38; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchMysqlDeps
+
 RUN set -xe \
 	&& buildDeps=" \
 		$PHP_EXTRA_BUILD_DEPS \
@@ -230,6 +270,8 @@ RUN set -xe \
 	&& ln -s /usr/bin/autoheader2.13 /usr/bin/autoheader \
 	&& ln -s /usr/bin/autoreconf2.13 /usr/bin/autoreconf \
 	&& ln -s /etc/autoconf2.13/acconfig.h /usr/share/autoconf2.13/acconfig.h \
+	&& ln -s /opt/mysql/5.6.38/lib/libmysqlclient.a /opt/mysql/5.6.38/lib/mysqlclient_r.a \
+	&& ln -s /opt/mysql/5.6.38/lib/libmysqlclient.so /opt/mysql/5.6.38/lib/mysqlclient_r.so \
 	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
 	&& curl ftp://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz -o /tmp/flex-2.5.4.tar.gz \
 	&& curl http://ftp.gnu.org/gnu/libiconv/libiconv-1.15.tar.gz -o /tmp/libiconv-1.15.tar.gz \
@@ -305,13 +347,13 @@ RUN set -xe \
 		--enable-mbregex \
 		--enable-mbregex-backtrack \
 		--with-libmbfl \
-		--with-mysql=shared,/opt/mysql/5.6.35 \
-		--with-mysql-sock=/tmp/mysql_sandbox5635.sock \
-		--with-mysqli=shared,/opt/mysql/5.6.35/bin/mysql_config \
+		--with-mysql=shared,/opt/mysql/5.6.38 \
+		--with-mysql-sock=/tmp/mysql_sandbox5638.sock \
+		--with-mysqli=shared,/opt/mysql/5.6.38/bin/mysql_config \
 		--with-unixODBC=shared,/usr \
 		--enable-pcntl=shared \
 		--enable-pdo=shared \
-		--with-pdo-mysql=shared,/opt/mysql/5.6.35/bin/mysql_config \
+		--with-pdo-mysql=shared,/opt/mysql/5.6.38/bin/mysql_config \
 		--with-pdo-sqlite=shared,/usr \
 		--enable-posix=shared \
 		--enable-session=shared \
