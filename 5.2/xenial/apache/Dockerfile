@@ -241,7 +241,7 @@ RUN set -xe \
 	&& rm -Rf /opt/flex-2.5.4 && export LEX=/opt/flex/bin/flex \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
 	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; echo $i; done \
-	&& ./buildconf --force
+	&& ./buildconf --force \
         && patch -N -p2 -s < /tmp/patches/0000_bison-flex.patch \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
 		--with-openssl=/usr \
