@@ -193,7 +193,6 @@ RUN set -xe \
 		libkrb5-dev \
 		libmcrypt-dev \
 		libmhash-dev \
-		libmysqlclient-dev \
 		libpcre3-dev \
 		libpng-dev \
 		libpspell-dev \
@@ -233,12 +232,20 @@ RUN set -xe \
 	&& ln -s /etc/autoconf2.13/acconfig.h /usr/share/autoconf2.13/acconfig.h \
 	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
 	&& curl ftp://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz -o /tmp/flex-2.5.4.tar.gz \
+	&& curl http://ftp.gnu.org/gnu/libiconv/libiconv-1.15.tar.gz -o /tmp/libiconv-1.15.tar.gz \
+#	&& curl https://pecl.php.net/get/pdflib-3.0.4.tgz -o /tmp/pdflib-3.0.4.tgz \
+#	&& curl http://www.pdflib.com/binaries/PDFlib/705/PDFlib-Lite-7.0.5p3.tar.gz -o /tmp/PDFlib-Lite-7.0.5p3.tar.gz \
 	&& mkdir -p /opt/bison && cd /opt/ && tar xvf /tmp/bison-2.4.tar.bz2 \
-	&& mkdir -p /opt/flex && tar xvf /tmp/flex-2.5.4.tar.gz \
+	&& mkdir -p /opt/flex && cd /opt/ && tar xvf /tmp/flex-2.5.4.tar.gz \
+	&& mkdir -p /opt/libiconv && cd /opt/ && tar xvf /tmp/libiconv-1.15.tar.gz \
+#	&& mkdir -p /opt/libpdf && cd /opt/ && tar xvf /tmp/pdflib-3.0.4.tgz \
 	&& cd /opt/bison-2.4 && ./configure --prefix=/opt/bison && make install clean \
 	&& cd /opt/flex-2.5.4 && ./configure --prefix=/opt/flex && make install clean \
+	&& cd /opt/libiconv-1.15 && ./configure && make install clean \
+#	&& cd /opt/pdflib-3.0.4 && ./configure --prefix=/opt/libpdf && make install clean \
 	&& cd /usr/src/php && rm -Rf /opt/bison-2.4 && export YACC=/opt/bison/bin/bison \
 	&& rm -Rf /opt/flex-2.5.4 && export LEX=/opt/flex/bin/flex \
+	&& rm -Rf /opt/libiconv-1.15 \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
 	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; echo $i; done \
 	&& ./buildconf --force \
@@ -247,8 +254,8 @@ RUN set -xe \
 		--with-openssl=/usr \
 		--with-openssl-dir=/usr \
 		--with-sqlite=shared \
-		--with-mhash \
-		--with-iconv \
+		--with-mhash=shared \
+		--with-iconv=shared \
 		--enable-zend-multibyte \
 		--enable-sqlite-utf8 \
 		--with-xmlrpc=shared \
@@ -256,11 +263,16 @@ RUN set -xe \
 		--with-regex=php \
 		--with-zend-vm=CALL \
 		--with-curlwrappers \
+		--enable-spl \
+		--enable-dbase=shared \
+		--with-gnu-ld \
+		--with-iconv-dir=/usr \
 	" \
 	&& PHP_LIST_CONFIGURE_ARGS=" \
 #		--with-apxs2=/usr/bin/apxs \
 		--disable-cgi \
 		--enable-ipv6 \
+		--enable-reflection \
 		--enable-libxml \
 		--with-pcre-regex \
 		--with-zlib=shared,/usr \
@@ -276,7 +288,6 @@ RUN set -xe \
 		--enable-flatfile \
 		--enable-dom \
 		--enable-exif=shared \
-		--enable-fileinfo=shared \
 		--enable-filter=shared \
 		--enable-ftp=shared \
 		--with-gd=shared \
@@ -285,26 +296,23 @@ RUN set -xe \
 		--with-png-dir=/usr \
 		--with-freetype-dir=/usr \
 		--with-gettext=shared \
-		--enable-hash \
+		--enable-hash=shared \
 		--with-imap=shared \
 		--with-kerberos \
 		--with-imap-ssl \
-		--enable-intl=shared \
 		--enable-json=shared \
 		--enable-mbstring=shared \
 		--enable-mbregex \
 		--enable-mbregex-backtrack \
 		--with-libmbfl \
-		--with-onig \
-		--enable-mysqlnd=shared \
-		--with-mysql-sock \
-		--with-mysqli=shared,mysqlnd \
+		--with-mysql=shared,/opt/mysql/5.6.35 \
+		--with-mysql-sock=/tmp/mysql_sandbox5635.sock \
+		--with-mysqli=shared,/opt/mysql/5.6.35/bin/mysql_config \
 		--with-unixODBC=shared,/usr \
 		--enable-pcntl=shared \
 		--enable-pdo=shared \
-		--with-pdo-mysql=shared,mysqlnd \
+		--with-pdo-mysql=shared,/opt/mysql/5.6.35/bin/mysql_config \
 		--with-pdo-sqlite=shared,/usr \
-		--enable-phar=shared \
 		--enable-posix=shared \
 		--enable-session=shared \
 		--enable-shmop=shared \
