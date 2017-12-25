@@ -23,7 +23,7 @@
      test -z "$ac_dir" && ac_dir=.
      if test -f $ac_dir/$ac_word; then
 -      ac_cv_prog_LEX="flex"
-+      ac_cv_prog_LEX=""${LEX}"
++      ac_cv_prog_LEX="${LEX}"
        break
      fi
    done
