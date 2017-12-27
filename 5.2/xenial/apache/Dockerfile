@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
 		ca-certificates \
 		curl \
 		dirmngr \
+		lemon \
 		libaio1 \
 		libcurl3 \
 		libedit2 \
@@ -125,8 +126,8 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS 0B96609E270F565C13292B24C13C70B87267B52D 0A95E9A026542D53835E3F3A7DEC4E69FC9C83D7
 
 ENV PHP_VERSION 5.2.17
-ENV PHP_URL="https://git.php.net/?p=web/php-distributions.git;a=blob;f=php-5.2.17.tar.bz2;h=90d654f7b9c60320f6228194ed1d2f12976a3a59;hb=bed93a30bbc2104f6e88e6ef142891a4c289502f"
-ENV PHP_SHA256="" PHP_MD5="66a3e5755df257c814c42d90546bc3de"
+ENV PHP_URL="http://museum.php.net/php5/php-5.2.17.tar.bz2"
+ENV PHP_SHA256="" PHP_MD5="b27947f3045220faf16e4d9158cbfe13"
 
 RUN set -xe; \
 	\
@@ -294,9 +295,9 @@ RUN set -xe \
 	&& rm -Rf /opt/flex-2.5.4 && export LEX=/opt/flex/bin/flex \
 	&& rm -Rf /opt/libiconv-1.15 \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
-	&& for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; echo $i; done \
+	&& for i in /tmp/patches/**/*.patch; do patch -N -p2 -s < $i; echo $i; done \
 	&& ./buildconf --force \
-        && patch -N -p2 -s < /tmp/patches/0000_bison-flex.patch \
+        && patch -N -p2 -s < /tmp/patches/0000_bison-flex \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
 		--with-openssl=/usr \
 		--with-openssl-dir=/usr \
