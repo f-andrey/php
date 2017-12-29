@@ -1,5 +1,5 @@
---- a/src/configure	2017-12-27 19:04:02.646375469 +0300
-+++ b/src/configure	2017-12-27 19:19:23.916819608 +0300
+--- a/src/configure	2017-12-29 06:38:17.432677304 +0300
++++ b/src/configure	2017-12-29 06:52:19.978834147 +0300
 @@ -2987,7 +2987,7 @@ echo "configure:2977: checking if $AWK i
  
  
@@ -53,16 +53,16 @@
        php_cv_flex_version=invalid
        for flex_check_version in $flex_version_list; do
          if test "$flex_version" = "$flex_check_version"; then
-@@ -62756,7 +62756,7 @@ Note that the MySQL client library is no
+@@ -62698,7 +62698,7 @@ Note that the MySQL client library is no
      PHP_LIBDIR=lib
    fi
  
--  for i in $PHP_LIBDIR $PHP_LIBDIR/mysql; do
-+  for i in $PHP_MYSQL/lib $PHP_LIBDIR $PHP_LIBDIR/mysql; do
+-  for i in $PHP_LIBDIR $PHP_LIBDIR/mysql $PHP_LIBDIR/$DEB_HOST_MULTIARCH; do
++  for i in $PHP_MYSQL/lib $PHP_LIBDIR $PHP_LIBDIR/mysql $PHP_LIBDIR/$DEB_HOST_MULTIARCH; do
      
    str="$MYSQL_DIR/$i/lib$MYSQL_LIBNAME.*"
    for j in `echo $str`; do
-@@ -110445,7 +110445,7 @@ if eval "test \"`echo '$''{'php_cv_bison
+@@ -110408,7 +110408,7 @@ if eval "test \"`echo '$''{'php_cv_bison
    echo $ac_n "(cached) $ac_c" 1>&6
  else
    
