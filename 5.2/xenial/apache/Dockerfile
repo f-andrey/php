@@ -274,8 +274,8 @@ RUN set -xe \
 	&& ln -s /etc/autoconf2.13/acconfig.h /usr/share/autoconf2.13/acconfig.h \
 #	&& ln -s /opt/mysql/5.6.35/lib/libmysqlclient_r.a /usr/lib/x86_64-linux-gnu/mysqlclient_r.a \
 #	&& ln -s /opt/mysql/5.6.35/lib/libmysqlclient_r.so /usr/lib/x86_64-linux-gnu/mysqlclient_r.so \
-	&& mkdir /opt/mysql/5.6.35/lib/x86_64-linux-gnu \
-	&& cp -R /opt/mysql/5.6.35/lib/lib* /opt/mysql/5.6.35/lib/x86_64-linux-gnu/ \
+#	&& mkdir /opt/mysql/5.6.35/lib/x86_64-linux-gnu \
+#	&& cp -R /opt/mysql/5.6.35/lib/lib* /opt/mysql/5.6.35/lib/x86_64-linux-gnu/ \
 	&& export MYSQL_DIR=/opt/mysql/5.6.35 && export MYSQL_INC_DIR=/opt/mysql/5.6.35/include \
 	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
 	&& curl ftp://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz -o /tmp/flex-2.5.4.tar.gz \
