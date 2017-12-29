@@ -243,8 +243,10 @@ RUN set -xe \
 	&& ln -s /usr/bin/autoheader2.13 /usr/bin/autoheader \
 	&& ln -s /usr/bin/autoreconf2.13 /usr/bin/autoreconf \
 	&& ln -s /etc/autoconf2.13/acconfig.h /usr/share/autoconf2.13/acconfig.h \
-#	&& ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.a /usr/lib/x86_64-linux-gnu/mysqlclient_r.a \
-#	&& ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so /usr/lib/x86_64-linux-gnu/mysqlclient_r.so \
+	&& ln -s /usr/lib/libmysqlclient.a /usr/lib/x86_64-linux-gnu/libmysqlclient.a \
+	&& ln -s /usr/lib/libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/libmysqlclient.so \
+	&& ln -s /usr/lib/libmysqlclient.a /usr/lib/x86_64-linux-gnu/libmysqlclient_r.a \
+	&& ln -s /usr/lib/libmysqlclient.so.18 /usr/lib/x86_64-linux-gnu/libmysqlclient_r.so \
 	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
 	&& curl ftp://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz -o /tmp/flex-2.5.4.tar.gz \
 	&& curl http://ftp.gnu.org/gnu/libiconv/libiconv-1.15.tar.gz -o /tmp/libiconv-1.15.tar.gz \
@@ -316,7 +318,7 @@ RUN set -xe \
 		--enable-mbregex \
 		--enable-mbregex-backtrack \
 		--with-libmbfl \
-		--with-mysql=shared,/usr \
+		--with-mysql=shared \
 		--with-mysql-sock=/tmp/mysql.sock \
 		--with-mysqli=shared,/usr/bin/mysql_config \
 		--with-unixODBC=shared,/usr \
@@ -389,6 +391,8 @@ RUN set -xe \
 	&& cd / \
 	&& docker-php-source delete \
 	\
+	&& rm /usr/lib/x86_64-linux-gnu/libmysqlclient.a \
+	&& rm /usr/lib/x86_64-linux-gnu/libmysqlclient_r.a \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
 	\
 # https://github.com/docker-library/php/issues/443
