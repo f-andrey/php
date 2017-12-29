@@ -272,24 +272,16 @@ RUN set -xe \
 	&& ln -s /usr/bin/autoheader2.13 /usr/bin/autoheader \
 	&& ln -s /usr/bin/autoreconf2.13 /usr/bin/autoreconf \
 	&& ln -s /etc/autoconf2.13/acconfig.h /usr/share/autoconf2.13/acconfig.h \
-#	&& ln -s /opt/mysql/5.6.35/lib/libmysqlclient_r.a /usr/lib/x86_64-linux-gnu/mysqlclient_r.a \
-#	&& ln -s /opt/mysql/5.6.35/lib/libmysqlclient_r.so /usr/lib/x86_64-linux-gnu/mysqlclient_r.so \
-#	&& mkdir /opt/mysql/5.6.35/lib/x86_64-linux-gnu \
-#	&& cp -R /opt/mysql/5.6.35/lib/lib* /opt/mysql/5.6.35/lib/x86_64-linux-gnu/ \
 	&& export MYSQL_DIR=/opt/mysql/5.6.35 && export MYSQL_INC_DIR=/opt/mysql/5.6.35/include \
 	&& curl https://www.artfiles.org/gnu.org/bison/bison-2.4.tar.bz2 -o /tmp/bison-2.4.tar.bz2 \
 	&& curl ftp://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz -o /tmp/flex-2.5.4.tar.gz \
 	&& curl http://ftp.gnu.org/gnu/libiconv/libiconv-1.15.tar.gz -o /tmp/libiconv-1.15.tar.gz \
-#	&& curl https://pecl.php.net/get/pdflib-3.0.4.tgz -o /tmp/pdflib-3.0.4.tgz \
-#	&& curl http://www.pdflib.com/binaries/PDFlib/705/PDFlib-Lite-7.0.5p3.tar.gz -o /tmp/PDFlib-Lite-7.0.5p3.tar.gz \
 	&& mkdir -p /opt/bison && cd /opt/ && tar xvf /tmp/bison-2.4.tar.bz2 \
 	&& mkdir -p /opt/flex && cd /opt/ && tar xvf /tmp/flex-2.5.4.tar.gz \
 	&& mkdir -p /opt/libiconv && cd /opt/ && tar xvf /tmp/libiconv-1.15.tar.gz \
-#	&& mkdir -p /opt/libpdf && cd /opt/ && tar xvf /tmp/pdflib-3.0.4.tgz \
 	&& cd /opt/bison-2.4 && ./configure --prefix=/opt/bison && make install clean \
 	&& cd /opt/flex-2.5.4 && ./configure --prefix=/opt/flex && make install clean \
 	&& cd /opt/libiconv-1.15 && ./configure --prefix=/opt/libiconv --libdir=/opt/libiconv/lib/x86_64-linux-gnu && make install clean \
-#	&& cd /opt/pdflib-3.0.4 && ./configure --prefix=/opt/libpdf && make install clean \
 	&& cd /usr/src/php && rm -Rf /opt/bison-2.4 && export YACC=/opt/bison/bin/bison \
 	&& rm -Rf /opt/flex-2.5.4 && export LEX=/opt/flex/bin/flex \
 	&& rm -Rf /opt/libiconv-1.15 \
