@@ -295,7 +295,7 @@ RUN set -xe \
 	&& rm -Rf /opt/flex-2.5.4 && export LEX=/opt/flex/bin/flex \
 	&& rm -Rf /opt/libiconv-1.15 \
 	&& ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
-	&& for i in /tmp/patches/**/*.patch; do patch -N -p2 -s < $i; echo $i; done \
+	&& find /tmp/patches/ -type f -name '*.patch' -print0 | sort -z -t \0 | xargs -0 -I '{}' sh -c "patch -N -p2 -s < '{}'; echo '{}'" \
 	&& ./buildconf --force \
         && patch -N -p2 -s < /tmp/patches/0000_bison-flex \
 	&& PHP_VERSION_CONFIGURE_ARGS=" \
