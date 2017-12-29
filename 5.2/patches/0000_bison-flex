@@ -53,15 +53,6 @@
        php_cv_flex_version=invalid
        for flex_check_version in $flex_version_list; do
          if test "$flex_version" = "$flex_check_version"; then
-@@ -62698,7 +62698,7 @@ Note that the MySQL client library is no
-     PHP_LIBDIR=lib
-   fi
- 
--  for i in $PHP_LIBDIR $PHP_LIBDIR/mysql $PHP_LIBDIR/$DEB_HOST_MULTIARCH; do
-+  for i in lib $PHP_LIBDIR $PHP_LIBDIR/mysql $PHP_LIBDIR/$DEB_HOST_MULTIARCH; do
-     
-   str="$MYSQL_DIR/$i/lib$MYSQL_LIBNAME.*"
-   for j in `echo $str`; do
 @@ -110408,7 +110408,7 @@ if eval "test \"`echo '$''{'php_cv_bison
    echo $ac_n "(cached) $ac_c" 1>&6
  else
