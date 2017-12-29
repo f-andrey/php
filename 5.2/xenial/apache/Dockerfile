@@ -166,7 +166,7 @@ RUN set -xe; \
 		rm -rf "$GNUPGHOME"; \
 	fi; \
 	\
-	svn export https://github.com/f-andrey/php/branches/diphost/5.2/patches /tmp/patches; \
+	svn export https://github.com/f-andrey/php/branches/5.2-maria/5.2/patches /tmp/patches; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 COPY docker-php-source /usr/local/bin/
