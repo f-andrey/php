@@ -1,4 +1,4 @@
-	&& PHP_LIST_CONFIGURE_ARGS=" \
+	PHP_LIST_CONFIGURE_ARGS=" \
 #		--with-apxs2=/usr/bin/apxs \
 		--disable-cgi \
 		--enable-ipv6 \
@@ -72,52 +72,62 @@
 		--with-snmp=shared \
 		--with-tidy=shared \
 		--localstatedir=/var \
-		" \
-	&& ./configure \
+		"; \
+	./configure \
 		--build="$gnuArch" \
-		--host="$gnuArch" \
-		--disable-all \
-		--enable-shared \
-		--disable-static \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
 		\
 		--disable-cgi \
 		\
 # --enable-ftp is included here because ftp_ssl_connect() needs ftp to be compiled statically (see https://github.com/docker-library/php/issues/236)
-#		--enable-ftp \
+		--enable-ftp \
 # --enable-mbstring is included here because otherwise there's no way to get pecl to use it properly (see https://github.com/docker-library/php/issues/195)
-#		--enable-mbstring \
+		--enable-mbstring \
 # --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
-#		--enable-mysqlnd \
+		--enable-mysqlnd \
 # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
 		--with-password-argon2 \
 		\
-#		--with-curl \
-#		--with-libedit \
-#		--with-openssl \
-#		--with-zlib \
+		--with-curl \
+		--with-libedit \
+		--with-openssl \
+		--with-zlib \
 		\
 # bundled pcre does not support JIT on s390x
 # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
-		$PHP_LIST_CONFIGURE_ARGS \
-		$PHP_VERSION_CONFIGURE_ARGS \
-		$PHP_EXTRA_CONFIGURE_ARGS \
-	&& make -j "$(nproc)" \
-	&& make install \
-	&& { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
-	&& make clean \
-	&& cd / \
-	&& docker-php-source delete \
+		${PHP_LIST_CONFIGURE_ARGS:-} \
+		${PHP_VERSION_CONFIGURE_ARGS:-} \
+		${PHP_EXTRA_CONFIGURE_ARGS:-} \
+	; \
+	make -j "$(nproc)"; \
+	make install; \
+	find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; \
+	make clean; \
+	cd /; \
+	docker-php-source delete; \
 	\
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	find /usr/local -type f -executable -exec ldd '{}' ';' \
+		| awk '/=>/ { print $(NF-1) }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -r apt-mark manual \
+	; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	\
+	php --version; \
 	\
 # https://github.com/docker-library/php/issues/443
-	&& pecl update-channels \
-	&& rm -rf /tmp/pear ~/.pearrc
+	pecl update-channels; \
+	rm -rf /tmp/pear ~/.pearrc
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 

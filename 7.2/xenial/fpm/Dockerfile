@@ -9,6 +9,15 @@ FROM ubuntu:xenial
 # Set the env variable DEBIAN_FRONTEND to noninteractive
 ENV DEBIAN_FRONTEND noninteractive
 
+# prevent Debian's PHP packages from being installed
+# https://github.com/docker-library/php/pull/542
+RUN set -eux; \
+	{ \
+		echo 'Package: php*'; \
+		echo 'Pin: release *'; \
+		echo 'Pin-Priority: -1'; \
+	} > /etc/apt/preferences.d/no-debian-php
+
 # persistent / runtime deps
 ENV PHPIZE_DEPS \
 		autoconf \
@@ -17,7 +26,6 @@ ENV PHPIZE_DEPS \
 		g++ \
 		gcc \
 		libc-dev \
-		libpcre3-dev \
 		make \
 		pkg-config \
 		re2c
@@ -111,9 +119,11 @@ RUN set -xe; \
 
 COPY docker-php-source /usr/local/bin/
 
-RUN set -xe \
-	&& buildDeps=" \
-		$PHP_EXTRA_BUILD_DEPS \
+RUN set -eux; \
+	\
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
 		automake \
 		autoconf \
 		libtool \
@@ -149,28 +159,31 @@ RUN set -xe \
 		libzip-dev \
 		unixodbc-dev \
 		zlib1g-dev \
-	" \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+		${PHP_EXTRA_BUILD_DEPS:-} \
+	; \
+	rm -rf /var/lib/apt/lists/*; \
 	\
-	&& export CFLAGS="$PHP_CFLAGS" \
+	export \
+		CFLAGS="$PHP_CFLAGS" \
 		CPPFLAGS="$PHP_CPPFLAGS" \
 		LDFLAGS="$PHP_LDFLAGS" \
-	&& docker-php-source extract \
-	&& cd /usr/src/php \
-	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-	&& debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)" \
+	; \
+	docker-php-source extract; \
+	cd /usr/src/php; \
+	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
+	debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
 # https://bugs.php.net/bug.php?id=74125
-	&& if [ ! -d /usr/include/curl ]; then \
+	if [ ! -d /usr/include/curl ]; then \
 		ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl; \
-	fi \
+	fi; \
 # Fix libc-client  (libc-client.so require for -fpie)
-	&& ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a \
-	&& ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so \
+		ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a; \
+		ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so; \
 # This configure patches
-	&& for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done \
-	&& ./buildconf --force \
-	&& apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	&& PHP_VERSION_CONFIGURE_ARGS=" \
+	for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done; \
+	./buildconf --force; \
+	apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/*; \
+	PHP_VERSION_CONFIGURE_ARGS=" \
 		--with-openssl \
 		--with-sqlite3=shared \
 		--with-iconv=shared \
@@ -182,8 +195,8 @@ RUN set -xe \
 		--enable-opcache=shared \
 		--with-webp-dir=/usr \
 		--with-xpm-dir= \
-	" \
-	&& PHP_LIST_CONFIGURE_ARGS=" \
+	"; \
+	PHP_LIST_CONFIGURE_ARGS=" \
 #		--with-apxs2=/usr/bin/apxs \
 		--disable-cgi \
 		--enable-ipv6 \
@@ -257,50 +270,60 @@ RUN set -xe \
 		--with-snmp=shared \
 		--with-tidy=shared \
 		--localstatedir=/var \
-		" \
-	&& ./configure \
+		"; \
+	./configure \
 		--build="$gnuArch" \
-		--host="$gnuArch" \
-		--disable-all \
-		--enable-shared \
-		--disable-static \
 		--with-config-file-path="$PHP_INI_DIR" \
 		--with-config-file-scan-dir="$PHP_INI_DIR/conf.d" \
 		\
 		--disable-cgi \
 		\
 # --enable-ftp is included here because ftp_ssl_connect() needs ftp to be compiled statically (see https://github.com/docker-library/php/issues/236)
-#		--enable-ftp \
+		--enable-ftp \
 # --enable-mbstring is included here because otherwise there's no way to get pecl to use it properly (see https://github.com/docker-library/php/issues/195)
-#		--enable-mbstring \
+		--enable-mbstring \
 # --enable-mysqlnd is included here because it's harder to compile after the fact than extensions are (since it's a plugin for several extensions, not an extension in itself)
-#		--enable-mysqlnd \
+		--enable-mysqlnd \
 		\
-#		--with-curl \
-#		--with-libedit \
-#		--with-openssl \
-#		--with-zlib \
+		--with-curl \
+		--with-libedit \
+		--with-openssl \
+		--with-zlib \
 		\
 # bundled pcre does not support JIT on s390x
 # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
-		$PHP_LIST_CONFIGURE_ARGS \
-		$PHP_VERSION_CONFIGURE_ARGS \
-		$PHP_EXTRA_CONFIGURE_ARGS \
-	&& make -j "$(nproc)" \
-	&& make install \
-	&& { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
-	&& make clean \
-	&& cd / \
-	&& docker-php-source delete \
+		${PHP_LIST_CONFIGURE_ARGS:-} \
+		${PHP_VERSION_CONFIGURE_ARGS:-} \
+		${PHP_EXTRA_CONFIGURE_ARGS:-} \
+	; \
+	make -j "$(nproc)"; \
+	make install; \
+	find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; \
+	make clean; \
+	cd /; \
+	docker-php-source delete; \
 	\
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps \
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	find /usr/local -type f -executable -exec ldd '{}' ';' \
+		| awk '/=>/ { print $(NF-1) }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -r apt-mark manual \
+	; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	\
+	php --version; \
 	\
 # https://github.com/docker-library/php/issues/443
-	&& pecl update-channels \
-	&& rm -rf /tmp/pear ~/.pearrc
+	pecl update-channels; \
+	rm -rf /tmp/pear ~/.pearrc
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
@@ -341,7 +364,7 @@ RUN set -ex \
 		echo 'daemonize = no'; \
 		echo; \
 		echo '[www]'; \
-		echo 'listen = [::]:9000'; \
+		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 
 EXPOSE 9000
