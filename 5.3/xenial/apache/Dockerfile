@@ -243,9 +243,9 @@ RUN set -eux; \
 	cd /opt/bison-2.6.4 && ./configure --prefix=/opt/bison && make install clean; \
 	cd /usr/src/php && rm -Rf /opt/bison-2.6.4 && export YACC=/opt/bison/bin/bison; \
 	ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h; \
-	for i in /tmp/patches/*.patch; do patch -N -p2 -s < $i; done; \
+	find /tmp/patches/ -type f -name '*.patch' -print0 | sort -z -t \0 | xargs -0 -I '{}' sh -c "patch -N -p2 -s < '{}'; echo '{}'"; \
 	./buildconf --force; \
-	patch -N -p2 -s < /tmp/patches/0000_bison.patch; \
+	patch -N -p2 -s < /tmp/patches/0000_bison; \
 	PHP_VERSION_CONFIGURE_ARGS=" \
 		--with-openssl=/usr \
 		--with-openssl-dir=/usr \

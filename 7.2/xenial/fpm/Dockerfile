@@ -180,7 +180,7 @@ RUN set -eux; \
 		ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a; \
 		ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so; \
 # This configure patches
-	for i in /tmp/patches/*.patch; do patch -N -p1 -s < $i; done; \
+	find /tmp/patches/ -type f -name '*.patch' -print0 | sort -z -t \0 | xargs -0 -I '{}' sh -c "patch -N -p1 -s < '{}'; echo '{}'"; \
 	./buildconf --force; \
 	apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/*; \
 	PHP_VERSION_CONFIGURE_ARGS=" \

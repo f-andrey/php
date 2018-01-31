@@ -1,5 +1,5 @@
 # This configure patches
-	find /tmp/patches/ -type f -name '*.patch' -print0 | sort -z -t \0 | xargs -0 -I '{}' sh -c "patch -N -p2 -s < '{}'; echo '{}'"; \
+	find /tmp/patches/ -type f -name '*.patch' -print0 | sort -z -t \0 | xargs -0 -I '{}' sh -c "patch -N -p1 -s < '{}'; echo '{}'"; \
 	./buildconf --force; \
 	apt-get update && apt-get install -y bison flex --no-install-recommends && rm -rf /var/lib/apt/lists/*; \
 	PHP_VERSION_CONFIGURE_ARGS=" \
