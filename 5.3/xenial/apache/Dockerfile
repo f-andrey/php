@@ -238,6 +238,9 @@ RUN set -eux; \
 		ln -sf /usr/lib/libc-client.a /usr/lib/x86_64-linux-gnu/libc-client.a; \
 		ln -sf /usr/lib/libc-client.so /usr/lib/x86_64-linux-gnu/libc-client.so; \
 # This configure patches
+	apt-get update; \
+        apt-get install -y --no-install-recommends lemon; \
+        rm -rf /var/lib/apt/lists/*; \
 	curl https://www.artfiles.org/gnu.org/bison/bison-2.6.4.tar.xz -o /tmp/bison-2.6.4.tar.xz; \
 	mkdir -p /opt/bison && cd /opt/ && tar xvf /tmp/bison-2.6.4.tar.xz; \
 	cd /opt/bison-2.6.4 && ./configure --prefix=/opt/bison && make install clean; \
