@@ -71,9 +71,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 1729F83938DA44E27BA0F4D3DBDB397470D12172
 
-ENV PHP_VERSION 7.1.12
-ENV PHP_URL="https://secure.php.net/get/php-7.1.12.tar.bz2/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.1.12.tar.bz2.asc/from/this/mirror"
-ENV PHP_SHA256="f9ce3361ab99dce8f3f2fba663695ac9b18a3579bc8014dc280368d1577d87c4" PHP_MD5=""
+ENV PHP_VERSION 7.1.14
+ENV PHP_URL="https://secure.php.net/get/php-7.1.14.tar.bz2/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.1.14.tar.bz2.asc/from/this/mirror"
+ENV PHP_SHA256="63b2fd139ed7656756b0fa290bc42f8fff854723c3d2710a700e646370c581f4" PHP_MD5=""
 
 RUN set -xe; \
 	\
