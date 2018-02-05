@@ -33,13 +33,13 @@ RUN apt-get update && apt-get install -y \
 		libedit2 \
 		libsqlite3-0 \
 		libssl1.0 \
-		libtidy-0.99-0 \
+		libtidy5 \
 		libpcre3 \
 		libxml2 \
 		libxmlrpc-epi0 \
 		libxslt1.1 \
 		libzip4 \
-		libwebp5 \
+		libwebp6 \
 		mime-support \
 		ssmtp \
 		tzdata \

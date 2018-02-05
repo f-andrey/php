@@ -151,7 +151,7 @@ for version in "${versions[@]}"; do
 
 	dockerfiles=()
 
-	for suite in xenial zesty alpine{3.7,3.6,3.4}; do
+	for suite in xenial artful alpine{3.7,3.6,3.4}; do
 		[ -d "$version/$suite" ] || continue
 		alpineVer="${suite#alpine}"
 
@@ -183,8 +183,11 @@ for version in "${versions[@]}"; do
 				sed -ri 's!libressl!openssl!g' "$version/$suite/$variant/Dockerfile"
 			fi
 			if [ "$majorVersion" = '5' ] || [ "$majorVersion" = '7' -a "$minorVersion" -lt '2' ] || [ "$suite" = 'xenial' ]; then
-				# argon2 password hashing is only supported in 7.2+ and stretch+
+				# argon2 password hashing is only supported in 7.2+ and artful+
 				sed -ri '/argon2/d' "$version/$suite/$variant/Dockerfile"
+				# Tidy5 and libwebp6 for 7.2+ and artful+
+				sed -ri 's/libtidy5/libtidy-0.99-0/' "$version/$suite/$variant/Dockerfile"
+				sed -ri 's/libwebp6/libwebp5/' "$version/$suite/$variant/Dockerfile"
 				# Alpine 3.7+ _should_ include an "argon2-dev" package, but we should cross that bridge when we come to it
 			fi
 
